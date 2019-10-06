@@ -48,13 +48,14 @@ const OutstandingPremiumService = async () => {
     } else {
       result = {
         status: "FAILED",
-        message: "Invalid NIK and/or Password"
+        message: "Tidak ada data."
       };
     }
   } catch (error) {
     result = {
       status: "FAILED",
-      message: JSON.stringify(error.message)
+      message: "Terjadi suatu kesalahan.",
+      data: JSON.stringify(error.message)
     };
   }
   

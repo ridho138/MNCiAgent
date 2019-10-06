@@ -37,9 +37,6 @@ class InfoKlaim extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={{ marginBottom: 15, marginLeft: 5 }}>
-          <Text style={styles.textTitle}>Polis (Tanggal Post)</Text>
-        </View>
         <View style={{ marginBottom: 5, marginLeft: 5 }}>
           <Text style={styles.textDate}>Dari Tanggal</Text>
         </View>
@@ -64,7 +61,7 @@ class InfoKlaim extends Component {
             }}
           />
         </View>
-        <View style={{ marginBottom: 5, marginTop: 10, marginLeft: 5 }}>
+        <View style={{ marginBottom: 5, marginTop: 15, marginLeft: 5 }}>
           <Text style={styles.textDate}>Sampai Tanggal</Text>
         </View>
         <View>
@@ -88,7 +85,7 @@ class InfoKlaim extends Component {
             }}
           />
         </View>
-        <View style={{ marginBottom: 5, marginTop: 10, marginLeft: 5 }}>
+        <View style={{ marginBottom: 5, marginTop: 15, marginLeft: 5 }}>
           <Text style={styles.textDate}>No Plat</Text>
         </View>
         <View>
@@ -99,7 +96,7 @@ class InfoKlaim extends Component {
           />
         </View>
 
-        <View style={{ marginTop: 20 }}>
+        <View style={{ marginTop: 30 }}>
           <Button onPress={this.onSearchPress}>CARI</Button>
         </View>
       </View>
@@ -112,20 +109,14 @@ const styles = EStyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#06397B",
-    padding: 20
-  },
-  textTitle: {
-    color: "white",
-    fontSize: "0.9rem"
+    padding: 35
   },
   textDate: {
     color: "#E6E6FA",
-    fontSize: "0.7rem"
+    fontSize: "1rem"
   },
   datePicker: {
-    width: Dimensions.get("window").width - 50,
-    marginLeft: 5,
-    marginRight: 5
+    width: "100%"
   },
   bottomModal: {
     justifyContent: "flex-end",

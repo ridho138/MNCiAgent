@@ -25,12 +25,13 @@ const BranchService = async () => {
     } else {
       result = {
         status: "FAILED",
-        message: "Service Failed"
+        message: response.message
       };
     }
   } catch (error) {
     result = {
       status: "FAILED",
+      message: "Terjadi suatu kesalahan",
       message: JSON.stringify(error.message)
     };
   }

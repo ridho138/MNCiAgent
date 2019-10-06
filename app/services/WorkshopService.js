@@ -30,13 +30,14 @@ const WorkshopService = async (city) => {
     } else {
       result = {
         status: "FAILED",
-        message: "Workshop Failed"
+        message: response.message
       };
     }
   } catch (error) {
     result = {
       status: "FAILED",
-      message: JSON.stringify(error.message)
+      message: "Terjadi suatu kesalahan.",
+      data: JSON.stringify(error.message)
     };
   }
   

@@ -7,6 +7,8 @@ import CardSection from "../components/CardSection";
 import { BranchService } from "../services/BranchService";
 import Loader from "../components/Loader";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { connect } from "react-redux";
+import { setModalMenu } from "../actions";
 
 // create a component
 class Kantor extends Component {
@@ -17,6 +19,9 @@ class Kantor extends Component {
       keyword: "",
       loading: false
     };
+  }
+  componentDidMount = () => {
+    this.props.dispatch(setModalMenu(false));
   }
 
   renderList = item => {
@@ -51,17 +56,16 @@ class Kantor extends Component {
     });
     const { keyword } = this.state;
     const officeData = await BranchService(keyword);
-
+    this.setState({
+      loading: false
+    });
     if (officeData.status === "SUCCESS") {
       this.setState({
         Data: officeData.data
       });
     } else {
-      Alert.alert("Error", login.message);
+      Alert.alert("Error", officeData.message);
     }
-    this.setState({
-      loading: false
-    });
   };
 
   render() {
@@ -154,5 +158,11 @@ const styles = StyleSheet.create({
   }
 });
 
+const mapStateToProps = state => {
+  return {
+    data: state.dataModalMenu.isOpen
+  };
+};
+
 //make this component available to the app
-export default Kantor;
+export default connect(mapStateToProps)(Kantor);

@@ -2,7 +2,7 @@ import axios from "axios";
 import { Constants } from "../utils/Constants";
 import { setEnvelope, setData, getData } from "../utils/Utils";
 
-const PremiumProductionService = async (datefrom = "2019-01-01", dateto = "2019-08-19") => {
+const PremiumProductionService = async (datefrom, dateto) => {
   const { wsUrl, wsPremiumProduction, type, KEY_DATA_USER } = Constants;
   const { username, password, profile } = await getData(KEY_DATA_USER);
   const data = [
@@ -44,7 +44,6 @@ const PremiumProductionService = async (datefrom = "2019-01-01", dateto = "2019-
     let response = JSON.parse(dataResponseSplit[0]);
     
     if (response[0] !== "" && response[0] !== undefined) {
-      result = response
       result = {
         status: "SUCCESS",
         data: response

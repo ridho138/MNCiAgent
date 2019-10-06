@@ -7,7 +7,7 @@ import Card from "../components/Card";
 import CardSection from "../components/CardSection";
 import { toDate } from "../utils/Utils";
 import Input from "../components/Input"
-
+import Icon from "react-native-vector-icons/FontAwesome";
 // create a component
 class DaftarInfoKlaim extends Component {
   constructor(props) {
@@ -62,10 +62,47 @@ class DaftarInfoKlaim extends Component {
     return (
       <View style={styles.container}>
         <Loader loading={this.state.loading} />
-        <Input placeholder="Cari Polis" onChangeText={(val) => {this.searchFilterFunction(val)}} tStyle={{width: Dimensions.get("window").width - 30, marginBottom: 0}} />
+        {/* <Input placeholder="Cari Polis" onChangeText={(val) => {this.searchFilterFunction(val)}} tStyle={{width: Dimensions.get("window").width - 30, marginBottom: 0}} /> */}
+        <Card
+          cStyle={{
+            borderRadius: 10,
+            borderColor: "transparent",
+            shadowRadius: 10,
+            marginLeft: 0,
+            marginBottom: 0,
+            marginTop: 0,
+            marginRight: 0
+          }}
+        >
+          <CardSection
+            cStyle={{
+              backgroundColor: "rgba(255, 255, 255, 0.3)",
+              borderRadius: 10,
+              borderBottomWidth: 0,
+              padding: 0
+            }}
+          >
+            <View style={styles.searchSection}>
+              <Icon
+                style={styles.searchIcon}
+                name="search"
+                size={15}
+                color="#ddd"
+              />
+              <Input
+                tStyle={styles.input}
+                placeholder="Cari Polis"
+                placeholderTextColor="#fff"
+                underlineColorAndroid="transparent"
+                onChangeText={(val) => {this.searchFilterFunction(val)}}
+              />
+              
+            </View>
+          </CardSection>
+        </Card>
         <FlatList
           data={this.state.data}
-          style={{ flex: 1, marginTop: 10 }}
+          style={styles.flatList}
           keyExtractor={item => `${item.POLICY_NO}-${item.POLICY_UNIT_NO}-${item.LOSS_DATE}`}
           renderItem={({ item }) => {
             return (
@@ -74,7 +111,7 @@ class DaftarInfoKlaim extends Component {
                   <View
                     style={{
                       flex: 1,
-                      padding: 15
+                      padding: 20
                     }}
                   >
                     <View style={styles.rowView}>
@@ -149,10 +186,7 @@ const styles = EStyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#06397B",
-    paddingTop: 10,
-    paddingLeft: 15,
-    paddingRight: 15,
-    paddingBottom: 10
+    padding: 30
   },
   rowView: {
     flexDirection: "row"
@@ -165,6 +199,25 @@ const styles = EStyleSheet.create({
   textContent: {
     color: "black",
     fontSize: "0.75rem"
+  },
+  searchSection: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  searchIcon: {
+    paddingLeft: 15,
+    paddingRight: 15
+  },
+  input: {
+    flex: 1,
+    color: "#fff",
+    backgroundColor: "transparent"
+  },
+  flatList: {
+    flex: 1,
+    marginTop: 15
   },
 });
 

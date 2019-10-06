@@ -45,13 +45,14 @@ const LoginService = async dataUser => {
     } else {
       result = {
         status: "FAILED",
-        message: "Invalid NIK and/or Password"
+        message: response.message
       };
     }
   } catch (error) {
     result = {
       status: "FAILED",
-      message: JSON.stringify(error.message)
+      message: "Terjadi suatu kesalahan.",
+      data: JSON.stringify(error.message)
     };
   }
   console.log(result);

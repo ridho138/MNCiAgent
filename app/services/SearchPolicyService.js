@@ -2,9 +2,11 @@ import axios from "axios";
 import { Constants } from "../utils/Constants";
 import { setEnvelope, setData, getData } from "../utils/Utils";
 
-const SearchPolicyService = async (keyword) => {
+const SearchPolicyService = async keyword => {
   const { wsUrl, wsSearchPolicy, type, KEY_DATA_USER } = Constants;
   const { username, password, profile } = await getData(KEY_DATA_USER);
+  const test = await getData(KEY_DATA_USER);
+  console.log(test);
   const data = [
     {
       name: "username",
@@ -30,7 +32,7 @@ const SearchPolicyService = async (keyword) => {
 
   const envelope = await setEnvelope(wsSearchPolicy, data);
   let result;
-  
+
   try {
     let postService = await axios.post(wsUrl, envelope, {
       headers: { "Content-Type": "application/soap+xml" }
@@ -38,25 +40,26 @@ const SearchPolicyService = async (keyword) => {
     let dataResponse = await postService.data;
     let dataResponseSplit = dataResponse.split("<?xml");
     let response = JSON.parse(dataResponseSplit[0]);
-    
+
     if (response[0] !== "" && response[0] !== undefined) {
       result = {
-          status: "SUCCESS",
-          data: response
-      }
+        status: "SUCCESS",
+        data: response
+      };
     } else {
       result = {
         status: "FAILED",
-        message: "Daftar Polis Failed"
+        message: response.message
       };
     }
   } catch (error) {
     result = {
       status: "FAILED",
-      message: JSON.stringify(error.message)
+      message: "Terjadi suatu kesalahan.",
+      data: JSON.stringify(error.message)
     };
   }
-  
+
   return result;
 };
 

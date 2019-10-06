@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, Dimensions, TouchableOpacity } from "react-native";
+import { Text, View, Dimensions, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { connect } from "react-redux";
 import { setModalMenu } from "../actions";
@@ -23,8 +23,12 @@ class Menu extends Component {
             onPress={() => this.onMenuPress("Info Klaim")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="envelope" color="#20bf6b" size={30} />
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/InfoKlaim.png")}
+                />
               </View>
               <View
                 style={{
@@ -41,8 +45,12 @@ class Menu extends Component {
             onPress={() => this.onMenuPress("Daftar Polis")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="list-alt" color="#3867d6" size={30} />
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/DaftarPolis.png")}
+                />
               </View>
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Text style={styles.textTitle}>Daftar Polis</Text>
@@ -54,8 +62,12 @@ class Menu extends Component {
             onPress={() => this.onMenuPress("Polis Jatuh Tempo")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="history" color="#f7b731" size={30} />
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/PolisJatuhTempo.png")}
+                />
               </View>
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Text style={styles.textTitle}>Polis Jatuh Tempo</Text>
@@ -67,8 +79,12 @@ class Menu extends Component {
             onPress={() => this.onMenuPress("Kantor")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="building" color="#eb3b5a" size={30} />
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/Kantor.png")}
+                />
               </View>
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Text style={styles.textTitle}>Kantor</Text>
@@ -80,8 +96,12 @@ class Menu extends Component {
             onPress={() => this.onMenuPress("Daftar Bengkel")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="wrench" color="#8854d0" size={30} />
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/Bengkel.png")}
+                />
               </View>
               <View
                 style={{
@@ -95,11 +115,15 @@ class Menu extends Component {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            // onPress={() => this.onMenuPress("Approval")}
+            onPress={() => this.onMenuPress("Prosedur Klaim")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="map" color="#fc5c65" size={30} />
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/ProsedurKlaim.png")}
+                />
               </View>
               <View
                 style={{
@@ -113,11 +137,15 @@ class Menu extends Component {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            // onPress={() => this.onMenuPress("")}
+            onPress={() => this.onMenuPress("Produk")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="cube" color="#26de81" size={30} />
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/Produk.png")}
+                />
               </View>
               <View
                 style={{
@@ -131,8 +159,12 @@ class Menu extends Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.card} onPress={this.toggleModal}>
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="ellipsis-h" color="#fd9644" size={30} />
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/PremiBelumTerbayar.png")}
+                />
               </View>
               <View
                 style={{
@@ -171,7 +203,7 @@ const styles = EStyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  icon: {
+  iconContainer: {
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 5,
@@ -186,11 +218,16 @@ const styles = EStyleSheet.create({
     fontSize: "0.7rem",
     fontWeight: "bold",
     textAlign: "center"
+  },
+  icon: {
+    position: "absolute",
+    width: 25,
+    height: 25
   }
 });
 
 const mapStateToProps = state => {
-  console.log(state);
+  //console.log(state);
   return {
     data: state.dataModalMenu.isOpen
   };

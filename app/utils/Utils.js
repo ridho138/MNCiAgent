@@ -40,6 +40,18 @@ const clearData = async key => {
   }
 };
 
+const updateDate = async (key, data) => {
+  try {
+    AsyncStorage.mergeItem(key, data, () => {
+      AsyncStorage.getItem(key, (err, result) => {
+        console.log(result);
+      });
+    });
+  } catch (error) {
+    console.log(`getData --> ${error}`);
+  }
+};
+
 const toDateTime = date => {
   let result = "-";
   if (date !== null) {
@@ -85,7 +97,6 @@ const notifCount = () => {
 };
 
 const setEnvelope = (soapAction, data) => {
-  
   let xmls = `<?xml version="1.0" encoding="utf-8"?>\
                 <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\
                 xmlns:xsd="http://www.w3.org/2001/XMLSchema"\
@@ -102,4 +113,20 @@ const setEnvelope = (soapAction, data) => {
   return xmls;
 };
 
-export { setData, getData, clearData, toDateTime, toDate, toTime, notifCount, setEnvelope };
+const validateEmail = email => {
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return email === "" ? false : re.test(email);
+};
+
+export {
+  setData,
+  getData,
+  clearData,
+  toDateTime,
+  toDate,
+  toTime,
+  notifCount,
+  setEnvelope,
+  validateEmail,
+  updateDate
+};

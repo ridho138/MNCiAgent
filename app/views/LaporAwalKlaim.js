@@ -25,7 +25,7 @@ class LaporAwalKlaim extends Component {
   componentDidMount = async () => {
     this.props.dispatch(setModalMenu(false));
     const { KEY_DATA_USER } = Constants;
-    const { username, profile } = getData(KEY_DATA_USER);
+    const { username, profile } = await getData(KEY_DATA_USER);
     this.setState({
       email: username,
       nama: profile.NAME
@@ -33,20 +33,33 @@ class LaporAwalKlaim extends Component {
   };
 
   onSendPress = async () => {
-    this.setState({
-      loading: true
-    });
-    const { nomorKendaraan } = this.state;
-    const licenseCheck = await LicenseCheckExistService(nomorKendaraan);
+    
+    const { nomorKendaraan, email, nama } = this.state;
+    if (nomorKendaraan !== "") {
+      this.setState({
+        loading: true
+      });
+      const licenseCheck = await LicenseCheckExistService(nomorKendaraan);
 
-    this.setState({
-      loading: false
-    });
+      this.setState({
+        loading: false
+      });
 
-    if (licenseCheck.status === "SUCCESS") {
-      Alert.alert("Info", "Ada..");
+      if (licenseCheck.status === "SUCCESS") {
+        //Alert.alert("Info", JSON.stringify(licenseCheck.data));
+        const { POLICY_NO, INTEREST_INSURED } = licenseCheck.data[0];
+        this.props.navigation.navigate("Pelapor Klaim", {
+          policy_no: POLICY_NO,
+          license_no: nomorKendaraan,
+          interest_insured: INTEREST_INSURED,
+          email,
+          nama
+        });
+      } else {
+        Alert.alert("Info", licenseCheck.message);
+      }
     } else {
-      Alert.alert("Error", licenseCheck.message);
+      Alert.alert("Info", "Nomor kendaraan tidak boleh kosong.");
     }
   };
 
@@ -54,22 +67,56 @@ class LaporAwalKlaim extends Component {
     return (
       <View style={styles.container}>
         <Loader loading={this.state.loading} />
-        <View style={{ marginBottom: 5, marginLeft: 5 }}>
-          <Text style={styles.textDate}>Email</Text>
+        <View
+          style={{ alignSelf: "flex-start", paddingLeft: 40, paddingTop: 40 }}
+        >
+          <Text style={styles.textTitle}>Laporan Awal</Text>
         </View>
-        <View>
-          <Input value={this.state.email} />
+        <View
+          style={{
+            alignSelf: "flex-start",
+            paddingLeft: 40,
+            paddingTop: 21,
+            paddingBottom: 5
+          }}
+        >
+          <Text style={styles.textLabel}>Email</Text>
         </View>
-        <View style={{ marginBottom: 5, marginTop: 10, marginLeft: 5 }}>
-          <Text style={styles.textDate}>Nama Pelapor</Text>
+        <View style={styles.component}>
+          <Input
+            value={this.state.email}
+            onChangeText={value => this.setState({ email: value })}
+            editable={false}
+          />
         </View>
-        <View>
-          <Input value={this.state.nama} />
+        <View
+          style={{
+            alignSelf: "flex-start",
+            paddingLeft: 40,
+            paddingBottom: 5,
+            paddingTop: 15
+          }}
+        >
+          <Text style={styles.textLabel}>Nama Pelapor</Text>
         </View>
-        <View style={{ marginBottom: 5, marginTop: 10, marginLeft: 5 }}>
-          <Text style={styles.textDate}>Nomor Kendaraan</Text>
+        <View style={styles.component}>
+          <Input
+            value={this.state.nama}
+            onChangeText={value => this.setState({ nama: value })}
+            editable={false}
+          />
         </View>
-        <View>
+        <View
+          style={{
+            alignSelf: "flex-start",
+            paddingLeft: 40,
+            paddingBottom: 5,
+            paddingTop: 15
+          }}
+        >
+          <Text style={styles.textLabel}>Nomor Kendaraan</Text>
+        </View>
+        <View style={styles.component}>
           <Input
             onChangeText={value => {
               this.setState({ nomorKendaraan: value });
@@ -77,7 +124,7 @@ class LaporAwalKlaim extends Component {
           />
         </View>
 
-        <View style={{ marginTop: 20 }}>
+        <View style={[styles.component, { marginTop: 30 }]}>
           <Button onPress={this.onSendPress}>KIRIM</Button>
         </View>
       </View>
@@ -90,36 +137,21 @@ const styles = EStyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#06397B",
-    padding: 20
+    alignItems: "center"
   },
   textTitle: {
     color: "white",
-    fontSize: "0.9rem"
+    fontSize: "1rem",
+    fontWeight: "bold"
   },
-  textDate: {
-    color: "#E6E6FA",
-    fontSize: "0.7rem"
+  textLabel: {
+    color: "#fff",
+    fontSize: "0.8rem"
   },
-  datePicker: {
-    width: Dimensions.get("window").width - 50,
-    marginLeft: 5,
-    marginRight: 5
-  },
-  bottomModal: {
-    justifyContent: "flex-end",
-    marginLeft: 0,
-    marginRight: 0,
-    marginBottom: 0
-  },
-  modalContent: {
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    backgroundColor: "white",
-    padding: 10
-  },
-  modalContainer: {
-    flex: 1,
-    alignItems: "center"
+  component: {
+    paddingLeft: 35,
+    paddingRight: 35,
+    width: "100%"
   }
 });
 

@@ -9,6 +9,8 @@ import { toDate } from "../utils/Utils";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import NumberFormat from "react-number-format";
+import { connect } from "react-redux";
+import { setModalMenu } from "../actions";
 
 // create a component
 class PremiBelumTerbayar extends Component {
@@ -22,6 +24,7 @@ class PremiBelumTerbayar extends Component {
   }
 
   componentDidMount = async () => {
+    this.props.dispatch(setModalMenu(false));
     this.setState({
       loading: true
     });
@@ -199,6 +202,11 @@ const styles = EStyleSheet.create({
     fontSize: "0.75rem"
   }
 });
+const mapStateToProps = state => {
+  return {
+    data: state.dataModalMenu.isOpen
+  };
+};
 
 //make this component available to the app
-export default PremiBelumTerbayar;
+export default connect(mapStateToProps)(PremiBelumTerbayar);

@@ -4,13 +4,18 @@ import {
   Text,
   Dimensions,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Image
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import MainMenu from "./MainMenu";
-import EStyleSheet from 'react-native-extended-stylesheet';
+import EStyleSheet from "react-native-extended-stylesheet";
+import LinearGradient from "react-native-linear-gradient";
 
 const AllMenu = ({ Navigation }) => {
+  const onMenuPress = dest => {
+    Navigation.navigate(dest);
+  };
   return (
     <View style={{ flex: 1, alignItems: "center" }}>
       <View style={{ padding: 5 }}>
@@ -24,19 +29,26 @@ const AllMenu = ({ Navigation }) => {
         />
       </View>
       <View style={styles.container}>
-        <View style={styles.secondrow}>
+        <LinearGradient
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          colors={["#7b572d", "#835f2c", "#9e7b28", "#ae8925", "#b49024"]}
+          style={styles.secondrow}
+        >
           <MainMenu Navigation={Navigation} />
-        </View>
+        </LinearGradient>
         <View style={styles.menuRow}>
           <TouchableOpacity
             style={styles.card}
-            // onPress={() => this.onMenuPress("")}
+            onPress={() => onMenuPress("Info Klaim")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="envelope" color="#20bf6b" size={30}>
-                  {/* <Text>Daily Production</Text>     */}
-                </Icon>
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/InfoKlaim.png")}
+                />
               </View>
               <View
                 style={{
@@ -50,13 +62,15 @@ const AllMenu = ({ Navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            // onPress={() => this.onMenuPress("")}
+            onPress={() => onMenuPress("Daftar Polis")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="list-alt" color="#3867d6" size={30}>
-                  {/* <Text>Daily Production</Text>     */}
-                </Icon>
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/DaftarPolis.png")}
+                />
               </View>
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Text style={styles.textTitle}>Daftar Polis</Text>
@@ -65,13 +79,15 @@ const AllMenu = ({ Navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            // onPress={() => this.onMenuPress("Attendance")}
+            onPress={() => onMenuPress("Polis Jatuh Tempo")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="history" color="#f7b731" size={30}>
-                  {/* <Text>Daily Production</Text>     */}
-                </Icon>
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/PolisJatuhTempo.png")}
+                />
               </View>
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Text style={styles.textTitle}>Polis Jatuh Tempo</Text>
@@ -80,13 +96,15 @@ const AllMenu = ({ Navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            // onPress={() => this.onMenuPress("Staff Contact")}
+            onPress={() => onMenuPress("Kantor")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="building" color="#eb3b5a" size={30}>
-                  {/* <Text>Daily Production</Text>     */}
-                </Icon>
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/Kantor.png")}
+                />
               </View>
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Text style={styles.textTitle}>Kantor</Text>
@@ -95,13 +113,15 @@ const AllMenu = ({ Navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            // onPress={() => this.onMenuPress("")}
+            onPress={() => onMenuPress("Daftar Bengkel")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="wrench" color="#8854d0" size={30}>
-                  {/* <Text>Daily Production</Text>     */}
-                </Icon>
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/Bengkel.png")}
+                />
               </View>
               <View
                 style={{
@@ -115,13 +135,15 @@ const AllMenu = ({ Navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            // onPress={() => this.onMenuPress("Approval")}
+            onPress={() => onMenuPress("Prosedur Klaim")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="map" color="#fc5c65" size={30}>
-                  {/* <Text>Daily Production</Text>     */}
-                </Icon>
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/ProsedurKlaim.png")}
+                />
               </View>
               <View
                 style={{
@@ -135,13 +157,15 @@ const AllMenu = ({ Navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            // onPress={() => this.onMenuPress("")}
+            onPress={() => onMenuPress("Produk")}
           >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="cube" color="#26de81" size={30}>
-                  {/* <Text>Daily Production</Text>     */}
-                </Icon>
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/Produk.png")}
+                />
               </View>
               <View
                 style={{
@@ -153,12 +177,17 @@ const AllMenu = ({ Navigation }) => {
               </View>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.card} onPress={this.toggleModal}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => onMenuPress("Profil")}
+          >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="user" color="#2bcbba" size={30}>
-                  {/* <Text>Daily Production</Text>     */}
-                </Icon>
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/ProfilAgen.png")}
+                />
               </View>
               <View
                 style={{
@@ -170,12 +199,17 @@ const AllMenu = ({ Navigation }) => {
               </View>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.card} onPress={this.toggleModal}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => onMenuPress("MNC Care")}
+          >
             <View style={{ flex: 1 }}>
-              <View style={styles.icon}>
-                <Icon name="circle" color="#45aaf2" size={30}>
-                  {/* <Text>Daily Production</Text>     */}
-                </Icon>
+              <View style={styles.iconContainer}>
+                <Image
+                  resizeMode="contain"
+                  style={styles.icon}
+                  source={require("../assets/icons/Pelayanan.png")}
+                />
               </View>
               <View
                 style={{
@@ -187,15 +221,9 @@ const AllMenu = ({ Navigation }) => {
               </View>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.card}>
-            
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.card}>
-            
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.card}>
-            
-          </TouchableOpacity>
+          <TouchableOpacity style={styles.card}></TouchableOpacity>
+          <TouchableOpacity style={styles.card}></TouchableOpacity>
+          <TouchableOpacity style={styles.card}></TouchableOpacity>
         </View>
       </View>
     </View>
@@ -238,7 +266,7 @@ const styles = EStyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  icon: {
+  iconContainer: {
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 5,
@@ -250,7 +278,7 @@ const styles = EStyleSheet.create({
   },
   textTitle: {
     color: "black",
-    fontSize: '0.7rem',
+    fontSize: "0.7rem",
     fontWeight: "bold",
     textAlign: "center"
   }

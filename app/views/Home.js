@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { View, Dimensions } from "react-native";
+import { View, Dimensions, Alert } from "react-native";
 import { connect } from "react-redux";
-import { setModalMenu } from "../actions";
+import { setModalMenu, seNewsAnnouncementList } from "../actions";
 import Modal from "react-native-modal";
 import AgentProfileInfo from "./AgentProfileInfo";
 import ProductionSummary from "./ProductionSummary";
@@ -13,6 +13,9 @@ import Loader from "../components/Loader";
 import { getData } from "../utils/Utils";
 import { Constants } from "../utils/Constants";
 import { PremiumProductionService } from "../services/PremiumProductionService";
+import { EventScheduleService } from "../services/EventScheduleService";
+import LinearGradient from "react-native-linear-gradient";
+import moment from "moment";
 
 class Home extends Component {
   state = {
@@ -25,9 +28,13 @@ class Home extends Component {
       phonenumber: "",
       password: "",
       PASSWORD_EXP_DATE: "",
-      code: ""
+      code: "",
+      newsData: []
     },
-    sumPremiumProduction: 0
+    sumPremiumProduction: 0,
+    monthName: "",
+    year: "",
+    bulanProduksi: ""
   };
 
   toggleModal = () => {
@@ -42,19 +49,36 @@ class Home extends Component {
     const profile = await getData(Constants.KEY_DATA_USER);
     this.setState({ profileAgent: profile.profile });
 
-    // const premiumProduction = await PremiumProductionService();
-    // let sumPremiumProduction = 0;
-    // premiumProduction.map(data => {
-    //   sumPremiumProduction += data.GWP;
-    // });
-    
+    const news = await EventScheduleService();
+    console.log(news.data);
+    this.props.dispatch(seNewsAnnouncementList(news.data));
+
+    const dateFrom = moment()
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const dateTo = moment(new Date()).format("YYYY-MM-DD");
+    const momentLokal = moment()
+    momentLokal.locale('id')
+    const bulanProduksi = momentLokal.format("MMMM YYYY");
+
     this.setState({
-      // sumPremiumProduction,
+      bulanProduksi
+    });
+
+    const premiumProduction = await PremiumProductionService(dateFrom, dateTo);
+    let sumPremiumProduction = 0;
+    if (premiumProduction.status === "SUCCESS") {
+      premiumProduction.data.map(data => {
+        sumPremiumProduction += data.GWP;
+      });
+    }
+
+    this.setState({
+      sumPremiumProduction,
       loading: false
     });
+    //Alert.alert("Info", "Ini Componentdidmount");
   };
-
-  
 
   render() {
     return (
@@ -63,17 +87,28 @@ class Home extends Component {
         <View style={styles.subContainer01}>
           <View style={styles.firstrow}>
             <AgentProfileInfo Data={this.state.profileAgent} />
-            <ProductionSummary Data={this.state.sumPremiumProduction} />
+            <ProductionSummary
+              Data={this.state.sumPremiumProduction}
+              Month={this.state.bulanProduksi}
+            />
           </View>
-          <View style={styles.secondrow}>
+          <LinearGradient
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            colors={["#7b572d", "#835f2c", "#9e7b28", "#ae8925", "#b49024"]}
+            style={styles.secondrow}
+          >
             <MainMenu Navigation={this.props.navigation} />
-          </View>
+          </LinearGradient>
         </View>
         <View style={styles.subContainer02}>
           <Menu Navigation={this.props.navigation} />
         </View>
         <View style={styles.subContainer03}>
-          <NewsAnnouncement Navigation={this.props.navigation} />
+          <NewsAnnouncement
+            Navigation={this.props.navigation}
+            Data={this.state.newsData}
+          />
         </View>
         <Modal
           isVisible={this.props.data}
@@ -106,7 +141,7 @@ const styles = {
     zIndex: 1
   },
   secondrow: {
-    backgroundColor: "#997a2d",
+    //backgroundColor: "#997a2d",
     width: "90%",
     height: "40%",
     borderRadius: 10,

@@ -4,7 +4,7 @@ import { setEnvelope, setData, getData } from "../utils/Utils";
 
 const LicenseCheckExistService = async (licenseno) => {
   const { wsUrl, wsLicenseCheckExist, type, KEY_DATA_USER } = Constants;
-  const { username, password, profile } = await getData(KEY_DATA_USER);
+  const { username, password } = await getData(KEY_DATA_USER);
   const data = [
     {
       name: "username",
@@ -44,7 +44,7 @@ const LicenseCheckExistService = async (licenseno) => {
     } else {
       result = {
         status: "FAILED",
-        message: "Invalid NIK and/or Password"
+        message: "Nomor Kendaraan tidak ditemukan."
       };
     }
   } catch (error) {

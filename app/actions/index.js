@@ -5,3 +5,12 @@ export const setModalMenu = isOpen => {
     payload: isOpen
   };
 };
+
+export const NEWS_ANNOUNCEMENT_LIST = "NEWS_ANNOUNCEMENT_LIST";
+export const seNewsAnnouncementList = data => {
+  return {
+    type: NEWS_ANNOUNCEMENT_LIST,
+    payload: data
+  };
+};
+

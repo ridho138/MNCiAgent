@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import EStyleSheet from "react-native-extended-stylesheet";
+import LinearGradient from "react-native-linear-gradient";
 
 const MainMenu = ({ Navigation }) => {
   const onMenuPress = dest => {
@@ -12,7 +13,7 @@ const MainMenu = ({ Navigation }) => {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.card}
-        // onPress={() => onMenuPress("Produksi Premi")}
+        onPress={() => onMenuPress("Penawaran")}
       >
         <View style={{ flex: 1 }}>
           <View
@@ -23,9 +24,11 @@ const MainMenu = ({ Navigation }) => {
               flex: 1
             }}
           >
-            <Icon name="copy" color="#fff" size={25}>
-              {/* <Text>Daily Production</Text>     */}
-            </Icon>
+            <Image
+              resizeMode="contain"
+              style={styles.icon}
+              source={require("../assets/icons/Penawaran.png")}
+            />
           </View>
           <View
             style={{
@@ -35,7 +38,7 @@ const MainMenu = ({ Navigation }) => {
               flex: 1
             }}
           >
-            <Text style={styles.textTitle}>Quotation (QS)</Text>
+            <Text style={styles.textTitle}>Penawaran</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -52,9 +55,11 @@ const MainMenu = ({ Navigation }) => {
               flex: 1
             }}
           >
-            <Icon name="bar-chart" color="#fff" size={25}>
-              {/* <Text>Daily Production</Text>     */}
-            </Icon>
+            <Image
+              resizeMode="contain"
+              style={styles.icon}
+              source={require("../assets/icons/ProduksiPremi.png")}
+            />
           </View>
           <View
             style={{
@@ -81,9 +86,11 @@ const MainMenu = ({ Navigation }) => {
               flex: 1
             }}
           >
-            <Icon name="clipboard" color="#fff" size={25}>
-              {/* <Text>Daily Production</Text>     */}
-            </Icon>
+            <Image
+              resizeMode="contain"
+              style={styles.icon}
+              source={require("../assets/icons/LaporKlaim.png")}
+            />
           </View>
           <View
             style={{
@@ -110,9 +117,11 @@ const MainMenu = ({ Navigation }) => {
               flex: 1
             }}
           >
-            <Icon name="list-alt" color="#fff" size={25}>
-              {/* <Text>Daily Production</Text>     */}
-            </Icon>
+            <Image
+              resizeMode="contain"
+              style={styles.icon}
+              source={require("../assets/icons/PremiBelumTerbayar.png")}
+            />
           </View>
           <View
             style={{
@@ -146,6 +155,11 @@ const styles = EStyleSheet.create({
     color: "white",
     fontSize: "0.7rem",
     textAlign: "center"
+  },
+  icon: {
+    position: "absolute",
+    width: 25,
+    height: 25
   }
 });
 

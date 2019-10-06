@@ -3,10 +3,10 @@ import { View, Text } from "react-native";
 import EStyleSheet from "react-native-extended-stylesheet";
 import NumberFormat from "react-number-format";
 
-const ProductionSummary = ({ Data }) => {
+const ProductionSummary = ({ Data, Month }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.textTitle}>Produksi Premi Periode Juli 2019</Text>
+      <Text style={styles.textTitle}>Produksi Premi Periode {Month}</Text>
       <NumberFormat
         value={Data}
         displayType={"text"}

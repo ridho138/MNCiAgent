@@ -1,12 +1,6 @@
 //import liraries
 import React, { Component } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TextInput
-} from "react-native";
+import { View, Text, StyleSheet, FlatList, TextInput, Alert } from "react-native";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import CardSection from "../components/CardSection";
@@ -14,6 +8,10 @@ import { SearchPolicyService } from "../services/SearchPolicyService";
 import Loader from "../components/Loader";
 import { toDate } from "../utils/Utils";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Input from "../components/Input";
+import EStyleSheet from "react-native-extended-stylesheet";
+import { connect } from "react-redux";
+import { setModalMenu } from "../actions";
 
 // create a component
 class DaftarPolis extends Component {
@@ -24,14 +22,45 @@ class DaftarPolis extends Component {
       keyword: "",
       loading: false
     };
+    this.arrayholder = [];
   }
 
-  onClaimPress = (policy_no, license_no1, license_no2, license_no3, interest_insured) => {
-    this.props.navigation.navigate("Pelapor Klaim",{
+  componentDidMount = () => {
+    this.props.dispatch(setModalMenu(false));
+    this.loadData("");
+  };
+
+  loadData = async keyword => {
+    this.arrayholder = [];
+    this.setState({
+      loading: true
+    });
+    const policyData = await SearchPolicyService(keyword);
+    this.setState({
+      loading: false
+    });
+    if (policyData.status === "SUCCESS") {
+      this.setState({
+        Data: policyData.data
+      });
+      this.arrayholder = policyData.data;
+    } else {
+      Alert.alert("Info", policyData.message);
+    }
+    
+  };
+
+  onClaimPress = (
+    policy_no,
+    license_no1,
+    license_no2,
+    license_no3,
+    interest_insured
+  ) => {
+    const license_no = `${license_no1}-${license_no2}-${license_no3}`;
+    this.props.navigation.navigate("Pelapor Klaim", {
       policy_no,
-      license_no1,
-      license_no2,
-      license_no3,
+      license_no,
       interest_insured
     });
   };
@@ -41,24 +70,98 @@ class DaftarPolis extends Component {
       <Card>
         <CardSection>
           <View style={{ flex: 1 }}>
-            <View style={{ paddingLeft: 8 }}>
-              <Text>Nomor Polis : {item.POLICY_NO}</Text>
-              <Text>
-                Nomor Plat : {item.license_no1}
-                 {item.license_no2}
-                 {item.license_no3}
-              </Text>
-              <Text>Nama Tertanggung : {item.INTEREST_INSURED}</Text>
-              <Text>Tanggal Efektif : {toDate(item.EFF_DATE)}</Text>
-              <Text>Tanggal Kadaluarsa : {toDate(item.EXP_DATE)}</Text>
-              <Text>Status Polis : {item.POLICY_STATUS}</Text>
-              <Text>Status Premi : {item.PAYMENT_STATUS}</Text>
+            <View
+              style={{
+                paddingLeft: 20,
+                paddingRight: 20,
+                paddingTop: 20,
+                paddingBottom: 15
+              }}
+            >
+              <View style={styles.rowView}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textTitle}>Nomor Polis</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textContent}>{item.POLICY_NO}</Text>
+                </View>
+              </View>
+
+              <View style={styles.rowView}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textTitle}>Nomor Plat</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textContent}>
+                    {item.license_no1}-{item.license_no2}-{item.license_no3}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.rowView}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textTitle}>Nama Tertanggung</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textContent}>
+                    {item.INTEREST_INSURED}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.rowView}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textTitle}>Tanggal Efektif</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textContent}>
+                    {toDate(item.EFF_DATE)}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.rowView}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textTitle}>Tanggal Kaduluarsa</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textContent}>
+                    {toDate(item.EXP_DATE)}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.rowView}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textTitle}>Status Polis</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textContent}>{item.POLICY_STATUS}</Text>
+                </View>
+              </View>
+
+              <View style={styles.rowView}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textTitle}>Status Premi</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.textContent}>{item.PAYMENT_STATUS}</Text>
+                </View>
+              </View>
             </View>
 
             <View style={styles.buttonContainer}>
               <Button
-                onPress={() => this.onClaimPress(item.POLICY_NO, item.license_no1, item.license_no2, item.license_no3,
-                  item.INTEREST_INSURED)}
+                bStyle={{ alignSelf: "stretch", width: undefined }}
+                onPress={() =>
+                  this.onClaimPress(
+                    item.POLICY_NO,
+                    item.license_no1,
+                    item.license_no2,
+                    item.license_no3,
+                    item.INTEREST_INSURED
+                  )
+                }
               >
                 KLAIM
               </Button>
@@ -73,70 +176,86 @@ class DaftarPolis extends Component {
     console.log(this.state.Data);
   }
 
-  onSearchPolicyPress = async () => {
-    this.setState({
-      loading: true
-    });
-    const { keyword } = this.state;
-    const policyData = await SearchPolicyService(keyword);
+  searchFilterFunction = async text => {
+    const newData = this.arrayholder.filter(item => {
+      const itemData = `${item.POLICY_NO.toUpperCase()}   
+      ${item.INTEREST_INSURED.toUpperCase()}`;
 
-    if (policyData.status === "SUCCESS") {
-      this.setState({
-        Data: policyData.data
-      });
-    } else {
-      Alert.alert("Error", login.message);
-    }
-    this.setState({
-      loading: false
+      const textData = text.toUpperCase();
+
+      return itemData.indexOf(textData) > -1;
     });
+    console.log(newData);
+    if (newData.length === 0) {
+      this.loadData(text);
+    } else {
+      this.setState({ Data: newData });
+    }
   };
 
   render() {
     return (
       <View
-        style={{ backgroundColor: "#1A1F61", flex: 1, flexDirection: "column" }}
+        style={{
+          backgroundColor: "#1A1F61",
+          flex: 1,
+          flexDirection: "column",
+          padding: 30
+        }}
       >
         <Loader loading={this.state.loading} />
 
-        <Card>
-          <CardSection>
+        <Card
+          cStyle={{
+            borderRadius: 10,
+            borderColor: "transparent",
+            shadowRadius: 10,
+            marginLeft: 0,
+            marginBottom: 0,
+            marginTop: 0,
+            marginRight: 0
+          }}
+        >
+          <CardSection
+            cStyle={{
+              backgroundColor: "rgba(255, 255, 255, 0.3)",
+              borderRadius: 10,
+              borderBottomWidth: 0,
+              padding: 0
+            }}
+          >
             <View style={styles.searchSection}>
               <Icon
                 style={styles.searchIcon}
                 name="search"
-                size={20}
+                size={15}
                 color="#ddd"
               />
-              <TextInput
-                style={styles.input}
+              <Input
+                tStyle={styles.input}
                 placeholder="Cari Polis"
+                placeholderTextColor="#fff"
                 underlineColorAndroid="transparent"
-                onChangeText={text => this.setState({ keyword: text })}
-              />
-              <Icon
-                style={styles.searchIcon}
-                name="arrow-right"
-                size={25}
-                color="#06397B"
-                onPress={() => this.onSearchPolicyPress()}
+                onChangeText={val => {
+                  this.searchFilterFunction(val);
+                }}
               />
             </View>
           </CardSection>
         </Card>
-        <View style={{ flex: 5, marginTop: 10 }}>
+        <View style={{ flex: 5, marginTop: 29 }}>
           <Text
             style={{
-              paddingLeft: 32,
               color: "#fff",
               fontSize: 16,
-              marginBottom: 5
+              paddingLeft: 10,
+              fontWeight: "bold"
             }}
           >
             Daftar Polis
           </Text>
           <FlatList
-            style={styles.container}
+            style={styles.flatList}
             data={this.state.Data}
             renderItem={({ item }) => this.renderList(item)}
             keyExtractor={item => item.POLICY_NO}
@@ -148,39 +267,54 @@ class DaftarPolis extends Component {
 }
 
 // define your styles
-const styles = StyleSheet.create({
-  container: {
+const styles = EStyleSheet.create({
+  flatList: {
     flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20,
-    borderRadius: 20
+    marginTop: 15
+  },
+  rowView: {
+    flexDirection: "row",
+    paddingBottom: 5
   },
   buttonContainer: {
-    paddingTop: 10,
-    alignItems: "center",
-    marginBottom: 10
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingBottom: 20,
+    alignItems: "center"
   },
   searchSection: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 5
+    alignItems: "center"
   },
   searchIcon: {
-    padding: 8
+    paddingLeft: 15,
+    paddingRight: 15
   },
   input: {
     flex: 1,
-    paddingTop: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
-    paddingLeft: 0,
-    backgroundColor: "#fff",
-    color: "#06397B"
+    color: "#fff",
+    backgroundColor: "transparent"
+  },
+  textTitle: {
+    color: "black",
+    fontSize: "0.8rem",
+    fontWeight: "bold",
+    flex: 1
+  },
+  textContent: {
+    color: "black",
+    fontSize: "0.75rem",
+    flex: 1
   }
 });
 
+const mapStateToProps = state => {
+  return {
+    data: state.dataModalMenu.isOpen
+  };
+};
+
 //make this component available to the app
-export default DaftarPolis;
+export default connect(mapStateToProps)(DaftarPolis);

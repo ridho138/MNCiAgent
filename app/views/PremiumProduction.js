@@ -21,7 +21,9 @@ class PremiumProduction extends Component {
       isModalVisible: false,
       dariTanggal: moment(new Date()).format("YYYY-MM-DD"),
       sampaiTanggal: moment(new Date()).format("YYYY-MM-DD"),
-      modalHeight: Dimensions.get("window").height / 2 + Dimensions.get("window").height / 4,
+      modalHeight:
+        Dimensions.get("window").height / 2 +
+        Dimensions.get("window").height / 4,
       data: null,
       sumPremiumProduction: 0,
       sumPolicy: 0
@@ -48,7 +50,10 @@ class PremiumProduction extends Component {
     const { dariTanggal, sampaiTanggal } = this.state;
 
     if (dariTanggal !== "" && sampaiTanggal !== "") {
-      const premiumProduction = await PremiumProductionService(dariTanggal, sampaiTanggal);
+      const premiumProduction = await PremiumProductionService(
+        dariTanggal,
+        sampaiTanggal
+      );
       this.setState({
         loading: false
       });
@@ -81,7 +86,7 @@ class PremiumProduction extends Component {
     return (
       <View style={styles.container}>
         <Loader loading={this.state.loading} />
-        <View style={{ marginBottom: 15, marginLeft: 5 }}>
+        <View style={{ marginBottom: 20, marginLeft: 5 }}>
           <Text style={styles.textTitle}>Polis (Tanggal Post)</Text>
         </View>
         <View style={{ marginBottom: 5, marginLeft: 5 }}>
@@ -108,7 +113,7 @@ class PremiumProduction extends Component {
             }}
           />
         </View>
-        <View style={{ marginBottom: 5, marginTop: 10, marginLeft: 5 }}>
+        <View style={{ marginBottom: 5, marginTop: 15, marginLeft: 5 }}>
           <Text style={styles.textDate}>Sampai Tanggal</Text>
         </View>
         <View>
@@ -133,8 +138,13 @@ class PremiumProduction extends Component {
           />
         </View>
 
-        <View style={{ marginTop: 20 }}>
-          <Button onPress={this.onSendPress}>KIRIM</Button>
+        <View style={{ marginTop: 30 }}>
+          <Button
+            //bStyle={{ width: Dimensions.get("window").width - 70 }}
+            onPress={this.onSendPress}
+          >
+            KIRIM
+          </Button>
         </View>
 
         <Modal
@@ -146,44 +156,50 @@ class PremiumProduction extends Component {
           swipeDirection={["down"]}
           propagateSwipe
         >
-          <View
-            style={[styles.modalContent, { height: this.state.modalHeight }]}
-          >
+          <View style={styles.modalContent}>
             <View style={styles.modalContainer}>
               <View>
                 <View
                   style={{
                     width: 60,
                     height: 6,
-                    backgroundColor: "#AE8E36",
+                    backgroundColor: "#997b2e",
                     borderRadius: 5
                   }}
                 />
               </View>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ flex: 1, textAlign: "right", padding: 10 }}>
-                  Total Polis
-                </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginBottom: 10,
+                  paddingTop: 30
+                }}
+              >
+                <Text style={{ flex: 1 }}>Total Polis</Text>
                 <NumberFormat
                   value={this.state.sumPolicy}
                   displayType={"text"}
                   thousandSeparator={true}
                   renderText={value => (
-                    <Text style={{ flex: 2, padding: 10 }}>{value}</Text>
+                    <Text style={{ flex: 2 }}>: {value}</Text>
                   )}
                 />
               </View>
-              <View style={{ flexDirection: "row", marginBottom: 20 }}>
-                <Text style={{ flex: 1, textAlign: "right", padding: 10 }}>
-                  Total GWP
-                </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginBottom: 40,
+                  //paddingLeft: 40
+                }}
+              >
+                <Text style={{ flex: 1 }}>Total GWP</Text>
                 <NumberFormat
                   value={this.state.sumPremiumProduction}
                   displayType={"text"}
                   thousandSeparator={true}
                   prefix={"Rp "}
                   renderText={value => (
-                    <Text style={{ flex: 2, padding: 10 }}>{value}</Text>
+                    <Text style={{ flex: 2 }}>: {value}</Text>
                   )}
                 />
               </View>
@@ -198,15 +214,16 @@ class PremiumProduction extends Component {
                         flex: 1,
                         justifyContent: "center",
                         alignItems: "center",
-                        marginBottom: 15
+                        marginBottom: 15,
+                        paddingLeft: 20,
+                        //paddingRight: 20
                       }}
                     >
                       <View style={{ flexDirection: "row" }}>
                         <Text
                           style={{
                             flex: 1,
-                            textAlign: "left",
-                            paddingLeft: 20
+                            textAlign: "left"
                           }}
                         >
                           COB
@@ -217,8 +234,7 @@ class PremiumProduction extends Component {
                         <Text
                           style={{
                             flex: 1,
-                            textAlign: "left",
-                            paddingLeft: 20
+                            textAlign: "left"
                           }}
                         >
                           Total Polis
@@ -228,9 +244,7 @@ class PremiumProduction extends Component {
                           displayType={"text"}
                           thousandSeparator={true}
                           renderText={value => (
-                            <Text style={{ flex: 1 }}>
-                              {value}
-                            </Text>
+                            <Text style={{ flex: 1 }}>{value}</Text>
                           )}
                         />
                       </View>
@@ -238,8 +252,7 @@ class PremiumProduction extends Component {
                         <Text
                           style={{
                             flex: 1,
-                            textAlign: "left",
-                            paddingLeft: 20
+                            textAlign: "left"
                           }}
                         >
                           Total GWP
@@ -250,9 +263,7 @@ class PremiumProduction extends Component {
                           thousandSeparator={true}
                           prefix={"Rp "}
                           renderText={value => (
-                            <Text style={{ flex: 1 }}>
-                              {value}
-                            </Text>
+                            <Text style={{ flex: 1 }}>{value}</Text>
                           )}
                         />
                       </View>
@@ -273,20 +284,19 @@ const styles = EStyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#06397B",
-    padding: 20
+    padding: 35
   },
   textTitle: {
     color: "white",
-    fontSize: "0.9rem"
+    fontSize: "1rem",
+    fontWeight: "bold"
   },
   textDate: {
-    color: "#E6E6FA",
-    fontSize: "0.7rem"
+    color: "#fff",
+    fontSize: "0.8rem"
   },
   datePicker: {
-    width: Dimensions.get("window").width - 50,
-    marginLeft: 5,
-    marginRight: 5
+    width: Dimensions.get("window").width - 70
   },
   bottomModal: {
     justifyContent: "flex-end",
@@ -298,7 +308,12 @@ const styles = EStyleSheet.create({
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     backgroundColor: "white",
-    padding: 10
+    paddingRight: 40,
+    paddingLeft: 40,
+    paddingTop: 20,
+    paddingBottom: 10,
+    height:
+      Dimensions.get("window").height / 2 + Dimensions.get("window").height / 4
   },
   modalContainer: {
     flex: 1,

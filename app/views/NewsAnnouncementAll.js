@@ -15,101 +15,49 @@ import CardSection from "../components/CardSection";
 import { toDate } from "../utils/Utils";
 import Input from "../components/Input";
 
+import { connect } from "react-redux";
 // create a component
 class NewsAnnouncementAll extends Component {
-
-    
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
-      data: [
-        {
-          id: "1",
-          title: "Title Sample 001",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        },
-        {
-          id: "2",
-          title: "Title Sample 002",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        },
-        {
-          id: "3",
-          title: "Title Sample 003",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        },
-        {
-          id: "4",
-          title: "Title Sample 004",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        },
-        {
-          id: "5",
-          title: "Title Sample 005",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        },
-        {
-          id: "6",
-          title: "Title Sample 006",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        },
-        {
-          id: "7",
-          title: "Title Sample 007",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        }
-      ]
+      loading: false
     };
   }
 
   renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.card} onPress={this.onNewsPress}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => this.onNewsPress(item)}
+    >
       <View style={{ padding: 5 }}>
-        <Text style={styles.newsDate}>{item.date}</Text>
+        <Text style={styles.newsDate}>{toDate(item.CRE_DATE)}</Text>
       </View>
       <View style={{ padding: 5 }}>
-        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.newsTitle}>{item.title}</Text>
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.newsTitle}>
+          {item.TITLE}
+        </Text>
       </View>
-      <View style={{ padding: 5, paddingBottom: 15 }}>
-        <Text numberOfLines={2} ellipsizeMode='tail'>{item.content}</Text>
+      <View style={{ padding: 5 }}>
+        <Text numberOfLines={2} ellipsizeMode="tail">
+          {item.DESCRIPTION}
+        </Text>
       </View>
     </TouchableOpacity>
   );
 
-  onNewsPress = () => {
-    this.props.navigation.navigate("Berita Detail");
-  }
+  onNewsPress = item => {
+    this.props.navigation.navigate("Berita Detail", { item });
+  };
   render() {
     return (
       <View style={styles.container}>
         <FlatList
-            data={this.state.data}
-            keyExtractor={item => item.id}
-            renderItem={this.renderItem}
-            showsVerticalScrollIndicator={false}
-          />
+          data={this.props.data}
+          keyExtractor={item => item.id}
+          renderItem={this.renderItem}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
     );
   }
@@ -136,11 +84,11 @@ const styles = EStyleSheet.create({
     alignItems: "flex-end"
   },
   card: {
-    width: (Dimensions.get("window").width - 50),
+    width: Dimensions.get("window").width - 50,
     marginBottom: 10,
     backgroundColor: "white",
     justifyContent: "center",
-    borderRadius: 5,
+    borderRadius: 5
     // paddingBottom: 10
   },
   textStyle: {
@@ -157,5 +105,12 @@ const styles = EStyleSheet.create({
   }
 });
 
+const mapStateToProps = state => {
+  console.log(state);
+  return {
+    data: state.dataNewsAnnouncementList.data
+  };
+};
+
 //make this component available to the app
-export default NewsAnnouncementAll;
+export default connect(mapStateToProps)(NewsAnnouncementAll);

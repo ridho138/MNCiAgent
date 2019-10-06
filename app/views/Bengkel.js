@@ -17,6 +17,8 @@ import CardSection from "../components/CardSection";
 import { WorkshopService } from "../services/WorkshopService";
 import Loader from "../components/Loader";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { connect } from "react-redux";
+import { setModalMenu } from "../actions";
 
 // create a component
 class Bengkel extends Component {
@@ -28,7 +30,9 @@ class Bengkel extends Component {
       loading: false
     };
   }
-
+  componentDidMount = () => {
+    this.props.dispatch(setModalMenu(false));
+  }
   renderList = item => {
     return (
       <Card>
@@ -57,14 +61,14 @@ class Bengkel extends Component {
       loading: true
     });
     const { city } = this.state;
-    const policyData = await WorkshopService(city);
+    const bengkel = await WorkshopService(city);
 
-    if (policyData.status === "SUCCESS") {
+    if (bengkel.status === "SUCCESS") {
       this.setState({
-        Data: policyData.data
+        Data: bengkel.data
       });
     } else {
-      Alert.alert("Error", login.message);
+      Alert.alert("Error", bengkel.message);
     }
     this.setState({
       loading: false
@@ -189,5 +193,11 @@ const styles = StyleSheet.create({
   }
 });
 
+const mapStateToProps = state => {
+  return {
+    data: state.dataModalMenu.isOpen
+  };
+};
+
 //make this component available to the app
-export default Bengkel;
+export default connect(mapStateToProps)(Bengkel);

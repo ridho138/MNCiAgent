@@ -7,9 +7,11 @@ const Input = props => {
 
 const styles = {
   input: {
-    width: Dimensions.get("window").width - 50,
+    alignSelf: "stretch",
+    // width: Dimensions.get("window").width - 50,
     backgroundColor: "#fff",
-    marginBottom: 30,
+    padding: 7,
+    //marginBottom: 15,
     borderRadius: 5
   }
 };

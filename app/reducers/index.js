@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import { 
-  MODAL_MENU
+  MODAL_MENU,
+  NEWS_ANNOUNCEMENT_LIST
 } from '../actions/index'
 
 
@@ -20,9 +21,25 @@ export const dataModalMenu = (state = {
   }
 }
 
+export const dataNewsAnnouncementList = (state = {
+  data: [],
+}, action) => {
+  switch (action.type){
+    case `${NEWS_ANNOUNCEMENT_LIST}`: 
+      return {
+        ...state,
+        data: action.payload
+      }
+
+    default: 
+      return state
+  }
+}
+
 
 const rootReducer = combineReducers({
-  dataModalMenu
+  dataModalMenu,
+  dataNewsAnnouncementList
 })
 
 export default rootReducer

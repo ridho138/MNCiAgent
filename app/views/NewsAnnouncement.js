@@ -14,85 +14,34 @@ import Card from "../components/Card";
 import CardSection from "../components/CardSection";
 import { toDate } from "../utils/Utils";
 import Input from "../components/Input";
+import { EventScheduleService } from "../services/EventScheduleService";
+
+import { connect } from "react-redux";
 
 // create a component
 class NewsAnnouncement extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
-      data: [
-        {
-          id: "1",
-          title: "MNC Insurance Sediakan Asuransi Kendaraan Bermotor bagi Nasabah JTO Finance",
-          date: "12-Agustus-2019",
-          content:
-            "JAKARTA, iNews.id - PT MNC Asuransi Indonesia (MNC Insurance) dan PT JTrust Olympindo Multi Finance menjalin kerja sama penyediaan asuransi kendaraan bermotor. Nasabah JTO Finance nantinya mendapatkan perlindungan asuransi dari MNC Insurance. Perjanjian kerja sama ini tentu saja sejalan dengan rencana kerja MNC Insurance, di mana bidang multifinance menjadi salah satu fokus utama kami dalam mengembangkan perusahaan, ujar President Director MNC Insurance Sylvy Setiawan di MNC Financial Center, Jakarta, Rabu (15/5/2019). JTO Finance merupakan perusahaan pembiayaan kendaraan bermotor baik baru maupun bekas sedangkan MNC Insurance perusahaan penyedia jasa asuransi termasuk kendaraan bermotor. Kerja sama ini dinilai akan menguntungkan kedua perusahaan di samping konsumen. Debitur JTO Finance kini dapat kami layani dengan fitur-fitur layanan kami mulai dari pelayanan call center 24 jam, pengajuan claim melalui aplikasi, perbaikan di bengkel-bengkel unggulan kami dan pelayanan cepat yang selama ini telah diberikan oleh bagian claim kami, kata Sales and Marketing Director MNC Insurance Rinawati. Seremoni penandatanganan perjanjian kerja sama ini dilakukan oleh Sylvy Setiawan selaku President Director MNC Insurance dan Kazuyuki Matsuoka selaku President Director JTO Finance dengan disaksikan oleh Board of Directors MNC Financial Services. MNC Insurance sebagai bagian dari MNC Financial Services mencatat kinerja positif pada tahun lalu dengan pertumbuhan premi bruto 24 persen. Hal ini juga sejalan dengan meningkatnya laba perusahaan sebesar 47 persen. Pertumbuhan kami di tahun 2018 tentu saja akan terus kami jaga dengan memberikan pelayanan yang terbaik dan meningkatkan kualitas risiko yang kami terima. Hal ini untuk memastikan kelangsungan perusahaan yang stabil dan kemampuan kami untuk memberikan perlindungan atas risiko-risiko konsumen kami, kata Sylvy. Asuransi kendaraan bermotor MNC Insurance juga dapat dinikmati oleh konsumen ritel melalui pembelian langsung maupun secara online. Selain itu, MNC Insurance juga memberikan perlindungan melalui produk- produk asuransi lainnya seperti MNC Travel Express (asuransi perjalanan), MNC Personal Accident (Asuransi Kecelakaan Diri) maupun MNC Family Care (asuransi kecelakaan diri keluarga).",
-          image: ""
-        },
-        {
-          id: "2",
-          title: "Title Sample 002",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        },
-        {
-          id: "3",
-          title: "Title Sample 003",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        },
-        {
-          id: "4",
-          title: "Title Sample 004",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        },
-        {
-          id: "5",
-          title: "Title Sample 005",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        },
-        {
-          id: "6",
-          title: "Title Sample 006",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        },
-        {
-          id: "7",
-          title: "Title Sample 007",
-          date: "12-Agustus-2019",
-          content:
-            "Below are summary of the activities log which we have sent its solution to you, please check and send us feedback 'Finished/Closed' if the solution meet with your requirement or other respond to let us take further action.",
-          image: ""
-        }
-      ]
+      loading: false
     };
   }
-
   renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.card} onPress={this.onNewsPress}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => this.onNewsPress(item)}
+    >
       <View style={{ padding: 5 }}>
-        <Text style={styles.newsDate}>{item.date}</Text>
+        <Text style={styles.newsDate}>{toDate(item.CRE_DATE)}</Text>
       </View>
       <View style={{ padding: 5 }}>
-        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.newsTitle}>{item.title}</Text>
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.newsTitle}>
+          {item.TITLE}
+        </Text>
       </View>
       <View style={{ padding: 5 }}>
         <Text numberOfLines={2} ellipsizeMode="tail">
-          {item.content}
+          {item.DESCRIPTION}
         </Text>
       </View>
     </TouchableOpacity>
@@ -102,29 +51,30 @@ class NewsAnnouncement extends Component {
     this.props.Navigation.navigate("Berita & Informasi");
   };
 
-  onNewsPress = () => {
-    this.props.Navigation.navigate("Berita Detail");
-  }
+  onNewsPress = item => {
+    this.props.Navigation.navigate("Berita Detail", { item });
+  };
 
   render() {
+    console.log(this.state.data);
     return (
       <View style={styles.container}>
+        <Loader loading={this.state.loading} />
         <View style={styles.rowTitle}>
           <View style={styles.textTitle}>
-            <Text style={styles.textStyle}>News & Announcement</Text>
+            <Text style={styles.textStyle}>Berita & Informasi</Text>
           </View>
           <TouchableOpacity style={styles.linkTitle} onPress={this.onLinkPress}>
-            <Text style={styles.textStyle}>See All</Text>
+            <Text style={styles.textStyle}>Lihat Semua</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.content}>
           <FlatList
-            data={this.state.data}
-            keyExtractor={item => item.id}
+            data={this.props.data}
+            keyExtractor={item => item.ID}
             renderItem={this.renderItem}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            
           />
         </View>
       </View>
@@ -176,5 +126,12 @@ const styles = EStyleSheet.create({
   }
 });
 
+const mapStateToProps = state => {
+  
+  return {
+    data: state.dataNewsAnnouncementList.data
+  };
+};
+
 //make this component available to the app
-export default NewsAnnouncement;
+export default connect(mapStateToProps)(NewsAnnouncement);

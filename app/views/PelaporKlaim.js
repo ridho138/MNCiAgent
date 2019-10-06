@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component } from "react";
-import { View, Text, TextInput, StyleSheet, ScrollView } from "react-native";
+import { View, Text, TextInput, StyleSheet, ScrollView, Dimensions } from "react-native";
 import Loader from "../components/Loader";
 import Input from "../components/Input";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -9,22 +9,25 @@ import { getData } from "../utils/Utils";
 import { Constants } from "../utils/Constants";
 import DatePicker from "react-native-datepicker";
 import moment from "moment";
+import { FirstReportClaimService } from "../services/FirstReportClaimService";
 
 // create a component
 class PelaporKlaim extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loading: false,
       policy_no: "",
-      license_no1: "",
-      license_no2: "",
-      license_no3: "",
+      license_no: "",
       interest_insured: "",
       email: "",
       name: "",
       isEditable: false,
       tanggalKejadian: moment(new Date()).format("YYYY-MM-DD"),
-      waktuKejadian: moment(new Date()).format("h:mm:ss a")
+      waktuKejadian: moment(new Date()).format("h:mm:ss a"),
+      nomortelepon: "",
+      lokasikejadian: "",
+      keterangan: ""
     };
   }
 
@@ -34,19 +37,55 @@ class PelaporKlaim extends Component {
 
     const { navigation } = this.props;
     const policy_no = navigation.getParam("policy_no");
-    const license_no1 = navigation.getParam("license_no1");
-    const license_no2 = navigation.getParam("license_no2");
-    const license_no3 = navigation.getParam("license_no3");
+    const license_no = navigation.getParam("license_no");
     const interest_insured = navigation.getParam("interest_insured");
+    const email = navigation.getParam("email", username);
+    const name = navigation.getParam("nama", profile.NAME);
+
     this.setState({
       policy_no,
-      license_no1,
-      license_no2,
-      license_no3,
+      license_no,
       interest_insured,
-      email: username,
-      name: profile.NAME
+      email,
+      name
     });
+  };
+
+  onSendPress = async () => {
+    this.setState({
+      loading: true
+    });
+    const {
+      interest_insured,
+      license_no,
+      nomortelepon,
+      lokasikejadian,
+      keterangan,
+      policy_no,
+      tanggalKejadian,
+      waktuKejadian
+    } = this.state;
+
+    const data = {
+      phonenumber: nomortelepon,
+      licenseno: license_no,
+      policyno: policy_no,
+      insuredname: interest_insured,
+      lossdate: tanggalKejadian,
+      losstime: waktuKejadian,
+      lossplace: lokasikejadian,
+      lossdescription: keterangan
+    };
+
+    const sendClaimReport = await FirstReportClaimService(data);
+    this.setState({
+      loading: false
+    });
+    if (sendClaimReport.status === "SUCCESS") {
+      this.props.navigation.navigate("Home");
+    } else {
+      Alert.alert("Error", sendClaimReport.message);
+    }
   };
 
   render() {
@@ -54,56 +93,49 @@ class PelaporKlaim extends Component {
       <View
         style={{ backgroundColor: "#1A1F61", flex: 1, flexDirection: "column" }}
       >
+        <Loader loading={this.state.loading} />
+
         <ScrollView>
-          <View
-            style={{
-              padding: 20,
-              color: "#fff",
-              fontSize: 16,
-              marginBottom: 5,
-              marginTop: 5
-            }}
-          >
-            <Text style={{ color: "#fff", marginTop: 5, marginBottom: 15 }}>
-              Email : {this.state.email}
-            </Text>
-            <Text style={{ color: "#fff", marginBottom: 15 }}>
-              Nama Pelapor : {this.state.name}
-            </Text>
-            <Text style={{ color: "#fff", marginBottom: 15 }}>
-              Nomor Kendaraan : {this.state.license_no1}{" "}
-              {this.state.license_no2} {this.state.license_no3}
-            </Text>
-            <Text style={{ color: "#fff", marginBottom: 15 }}>
-              Nomor Polis : {this.state.policy_no}
-            </Text>
-            <Text style={{ color: "#fff" }}>
-              Nama Tertanggung : {this.state.interest_insured}
-            </Text>
+          <View style={styles.viewData}>
+            <View style={{ padding: 5, flexDirection: "row" }}>
+              <Text style={styles.text}>Email</Text>
+              <Text style={styles.text2}>{this.state.email}</Text>
+            </View>
+            <View style={{ padding: 5, flexDirection: "row" }}>
+              <Text style={styles.text}>Nama Pelapor</Text>
+              <Text style={styles.text2}>{this.state.name}</Text>
+            </View>
+            <View style={{ padding: 5, flexDirection: "row" }}>
+              <Text style={styles.text}>Nomor Kendaraan</Text>
+              <Text style={styles.text2}>
+                {this.state.license_no}
+              </Text>
+            </View>
+            <View style={{ padding: 5, flexDirection: "row" }}>
+              <Text style={styles.text}>Nomor Polis</Text>
+              <Text style={styles.text2}>{this.state.policy_no}</Text>
+            </View>
+            <View style={{ padding: 5, flexDirection: "row" }}>
+              <Text style={styles.text}>Nama Tertanggung</Text>
+              <Text style={styles.text2}>{this.state.interest_insured}</Text>
+            </View>
           </View>
 
-          <View
-            style={{
-              padding: 20
-            }}
-          >
-            <View style={{ alignSelf: "flex-start", padding: 5 }}>
-              <Text style={{ color: "white", fontSize: 12 }}>
-                Nomor Telepon
-              </Text>
+          <View style={styles.viewData1}>
+            <View style={{ padding: 5, flexDirection: "row" }}>
+              <Text style={styles.formtext}>Nomor Telepon</Text>
+              <Text style={styles.formtext2}>*Wajib Diisi</Text>
             </View>
             <TextInput
               style={styles.input}
-              onChangeText={value => this.setState({ nomortelepon: value })}
+              //onChangeText={value => this.setState({ nomortelepon: value })}
               placeholder="021-77665544 / 0899776654321"
               underlineColorAndroid="transparent"
               keyboardType="numeric"
             />
-
-            <View style={{ alignSelf: "flex-start", padding: 5 }}>
-              <Text style={{ color: "white", fontSize: 12 }}>
-                Tanggal Kejadian
-              </Text>
+            <View style={{ padding: 5, flexDirection: "row" }}>
+              <Text style={styles.formtext}>Dari Tanggal</Text>
+              <Text style={styles.formtext2}>*Wajib Diisi</Text>
             </View>
             <View>
               <DatePicker
@@ -115,22 +147,17 @@ class PelaporKlaim extends Component {
                     backgroundColor: "white"
                   }
                 }}
-                date={this.state.tanggalKejadian} //initial date from state
+                date={this.state.dariTanggal} //initial date from state
                 mode="date" //The enum of date, datetime and time
                 format="YYYY-MM-DD"
                 confirmBtnText="Confirm"
                 cancelBtnText="Cancel"
                 showIcon={false}
-                onDateChange={date => {
-                  this.setState({ tanggalKejadian: date });
-                }}
               />
             </View>
-
-            <View style={{ alignSelf: "flex-start", padding: 5 }}>
-              <Text style={{ color: "white", fontSize: 12, marginTop: 10 }}>
-                Waktu Kejadian
-              </Text>
+            <View style={{ padding: 5, flexDirection: "row", marginTop: 10 }}>
+              <Text style={styles.formtext}>Waktu Kejadian</Text>
+              <Text style={styles.formtext2}>*Wajib Diisi</Text>
             </View>
             <View>
               <DatePicker
@@ -148,33 +175,29 @@ class PelaporKlaim extends Component {
                 confirmBtnText="Confirm"
                 cancelBtnText="Cancel"
                 showIcon={false}
-                onDateChange={date => {
-                  this.setState({ waktuKejadian: date });
-                }}
               />
             </View>
-
-            <View style={{ alignSelf: "flex-start", padding: 5 }}>
-              <Text style={{ color: "white", fontSize: 12, marginTop: 10 }}>
-                Lokasi Kejadian
-              </Text>
+            <View style={{ padding: 5, flexDirection: "row", marginTop: 10 }}>
+              <Text style={styles.formtext}>Lokasi Kejadian</Text>
+              <Text style={styles.formtext2}>*Wajib Diisi</Text>
             </View>
             <TextInput
-              style={styles.inputKet}
+              style={styles.inputLok}
               //onChangeText={value => this.setState({ lokasikejadian: value })}
             />
 
-            <View style={{ alignSelf: "flex-start", padding: 5 }}>
-              <Text style={{ color: "white", fontSize: 12 }}>Keterangan</Text>
+            <View style={{ padding: 5, flexDirection: "row" }}>
+              <Text style={styles.formtext}>Keterangan</Text>
+              <Text style={styles.formtext2}>*Wajib Diisi</Text>
             </View>
             <TextInput
-              style={styles.inputKet}
+              style={styles.inputLok}
               //onChangeText={value => this.setState({ lokasikejadian: value })}
             />
-          </View>
 
-          <View style={{ marginBottom: 40, marginLeft: 15, marginRight: 15 }}>
-            <Button>KIRIM</Button>
+            <View style={{ marginTop: 20, marginBottom: 20 }}>
+              <Button>KIRIM</Button>
+            </View>
           </View>
         </ScrollView>
       </View>
@@ -183,20 +206,50 @@ class PelaporKlaim extends Component {
 }
 
 const styles = StyleSheet.create({
-  SectionStyle: {
-    backgroundColor: "white",
-    borderRadius: 5,
-    margin: 22
+  datePicker: {
+    width: Dimensions.get("window").width - 50,
+    marginLeft: 5,
+    marginRight: 5
   },
-  sectionSection: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 5
+  viewData: {
+    padding: 23,
+    color: "#fff",
+    fontSize: 16,
+    marginBottom: 5
   },
-  searchIcon: {
-    padding: 8
+  viewData1: {
+    marginLeft: 23,
+    marginRight: 23,
+    marginBottom: 10,
+    color: "#fff",
+    fontSize: 16,
+    marginBottom: 5,
+    marginTop: 5
+  },
+  text: {
+    color: "white",
+    fontSize: 12,
+    textAlign: "left",
+    flex: 1
+  },
+  text2: {
+    color: "white",
+    fontSize: 12,
+    textAlign: "left",
+    flex: 1,
+    fontWeight: "bold"
+  },
+  formtext: {
+    color: "white",
+    fontSize: 12,
+    textAlign: "left",
+    flex: 1
+  },
+  formtext2: {
+    color: "red",
+    fontSize: 10,
+    textAlign: "right",
+    flex: 1
   },
   input: {
     backgroundColor: "#fff",
@@ -204,19 +257,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10
   },
-  inputKet: {
+  inputLok: {
     backgroundColor: "#fff",
     color: "#06397B",
     borderRadius: 5,
     marginBottom: 10,
     width: 320,
     height: 120
-  },
-  inputDate: {
-    flex: 1,
-    backgroundColor: "#fff",
-    color: "#06397B",
-    borderRadius: 5
   }
 });
 
