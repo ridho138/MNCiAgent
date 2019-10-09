@@ -245,11 +245,11 @@ const styles = EStyleSheet.create({
   },
   textTitle: {
     color: "white",
-    fontSize: "0.9rem"
+    fontSize: "1rem"
   },
   textDate: {
     color: "#E6E6FA",
-    fontSize: "0.7rem"
+    fontSize: "0.8rem"
   },
   datePicker: {
     width: Dimensions.get("window").width - 50,

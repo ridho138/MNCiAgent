@@ -112,8 +112,8 @@ const styles = EStyleSheet.create({
     padding: 35
   },
   textDate: {
-    color: "#E6E6FA",
-    fontSize: "1rem"
+    color: "#fff",
+    fontSize: "0.8rem"
   },
   datePicker: {
     width: "100%"

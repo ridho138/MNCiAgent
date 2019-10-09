@@ -25,6 +25,7 @@ const Constants = {
   wsUpdateProfile: "UpdateProfile",
   wsGetNotifications: "GetNotifications",
   wsUpdateNotification: "UpdateNotification",
+  wsCreateQuotationDocument: "CreateQuotationDocument",
   KEY_DATA_USER: "DATA_USER",
   KEY_USER_ID: "USER_ID",
   KEY_PASSWORD: "PASSWORD",

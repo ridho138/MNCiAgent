@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Constants } from "../utils/Constants";
-import { setEnvelope, getData, updateDate } from "../utils/Utils";
+import { setEnvelope, getData } from "../utils/Utils";
 
 const GetNotificationsService = async () => {
   const { wsUrl, wsGetNotifications, type, KEY_DATA_USER } = Constants;
@@ -35,9 +35,9 @@ const GetNotificationsService = async () => {
       result = response;
       result = {
         status: "SUCCESS",
-        message: response.message
+        data: response
       };
-      await updateDate(KEY_DATA_USER, JSON.stringify({ password: newpassword }));
+      
     } else {
       result = {
         status: "FAILED",

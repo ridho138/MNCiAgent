@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component } from "react";
-import { View, Text, StyleSheet, FlatList, TextInput, Alert } from "react-native";
+import { View, Text, StyleSheet, FlatList, TextInput, Alert, Image } from "react-native";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import CardSection from "../components/CardSection";
@@ -225,11 +225,21 @@ class DaftarPolis extends Component {
             }}
           >
             <View style={styles.searchSection}>
-              <Icon
+              {/* <Icon
                 style={styles.searchIcon}
                 name="search"
                 size={15}
                 color="#ddd"
+              /> */}
+              <Image
+                resizeMode="contain"
+                style={{
+                  //paddingRight: 10,
+                  //position: "absolute",
+                  width: 15,
+                  height: 15
+                }}
+                source={require("../assets/icons/search.png")}
               />
               <Input
                 tStyle={styles.input}
@@ -286,7 +296,8 @@ const styles = EStyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    paddingLeft: 3
   },
   searchIcon: {
     paddingLeft: 15,

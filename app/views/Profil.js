@@ -15,7 +15,7 @@ class Profil extends Component {
       headerRight: (
         <View style={{ flex: 1, flexDirection: "row" }}>
           <Button onPress={() => navigation.navigate("Ubah Profil")}>
-            Ubah Profil
+            Ubah
           </Button>
         </View>
       )

@@ -5,7 +5,8 @@ import {
   StyleSheet,
   TextInput,
   Dimensions,
-  ScrollView
+  ScrollView,
+  Alert
 } from "react-native";
 import Button from "../components/Button";
 import DatePicker from "react-native-datepicker";
@@ -133,9 +134,8 @@ class Simulasi extends Component {
   };
 
   onHitungPremi = async () => {
-    this.setState({
-      loading: true
-    });
+     
+    
     const {
       kodeKendaraan,
       tahunBuat,
@@ -153,54 +153,64 @@ class Simulasi extends Component {
       baCoverage
     } = this.state;
 
-    const data = {
-      package: paket,
-      vehicle_code: kodeKendaraan,
-      plat_no: nomorPlat,
-      tsi: hargaPertanggungan,
-      tenor: tenor,
-      manufacture_year: tahunBuat,
-      effective_date: tanggalEfektif,
-      main_coverage: mainCoverage,
-      eq_coverage: eqCoverage.value,
-      stfwd_coverage: stfwdCoverage.value,
-      rscc_coverage: rsccCoverage.value,
-      ts_coverage: tsCoverage.value,
-      tpl_coverage: tplCoverage.value,
-      ba_coverage: baCoverage.value
-    };
-    console.log(data);
-    const hitungPremi = await PremiumCalculationService(data);
-    this.setState({
-      loading: false
-    });
-
-    if (hitungPremi.status === "SUCCESS") {
-      let premi = 0;
-      let materai = 0;
-      let biayaPolis = 0;
-
-      hitungPremi.data.map(data => {
-        if (data.YEARS !== 0) {
-          premi += data.PREMIUM_AMMOUNT;
-        } else {
-          materai += data.COVERAGE_CODE === "stamp" ? data.PREMIUM_AMMOUNT : 0;
-          biayaPolis +=
-            data.COVERAGE_CODE === "cost" ? data.PREMIUM_AMMOUNT : 0;
-        }
-      });
-
+    const plat = nomorPlat.split("-")
+    if(plat.length === 3){
       this.setState({
-        premi,
-        materai,
-        biayaPolis
+        loading: true
       });
-
-      this.toggleModal();
-      console.log(hitungPremi.data);
-    } else {
-      Alert.alert("Error", hitungPremi.message);
+      const data = {
+        package: paket,
+        vehicle_code: kodeKendaraan,
+        plat_no: plat[0],
+        tsi: hargaPertanggungan,
+        tenor: tenor,
+        manufacture_year: tahunBuat,
+        effective_date: tanggalEfektif,
+        main_coverage: mainCoverage,
+        eq_coverage: eqCoverage.value,
+        stfwd_coverage: stfwdCoverage.value,
+        rscc_coverage: rsccCoverage.value,
+        ts_coverage: tsCoverage.value,
+        tpl_coverage: tplCoverage.value,
+        ba_coverage: baCoverage.value
+      };
+      console.log(data);
+      const hitungPremi = await PremiumCalculationService(data);
+      this.setState({
+        loading: false
+      });
+  
+      if (hitungPremi.status === "SUCCESS") {
+        let premi = 0;
+        let materai = 0;
+        let biayaPolis = 0;
+  
+        hitungPremi.data.map(data => {
+          if (data.YEARS !== 0) {
+            premi += data.PREMIUM_AMMOUNT;
+          } else {
+            materai += data.COVERAGE_CODE === "stamp" ? data.PREMIUM_AMMOUNT : 0;
+            biayaPolis +=
+              data.COVERAGE_CODE === "cost" ? data.PREMIUM_AMMOUNT : 0;
+          }
+        });
+  
+        this.setState({
+          premi,
+          materai,
+          biayaPolis
+        });
+  
+        this.toggleModal();
+        console.log(hitungPremi.data);
+      } else {
+        Alert.alert("Error", hitungPremi.message);
+      }
     }
+    else {
+      Alert.alert("Info", "Format nomor kendaraan salah. Contoh: B-1234-ABC");
+    }
+    
   };
 
   onRadioButtonPress = data => {
@@ -216,6 +226,7 @@ class Simulasi extends Component {
   };
 
   onBuatPenawaranPress = () => {
+    this.toggleModal();
     const {
       kodeKendaraan,
       tahunBuat,
@@ -255,7 +266,7 @@ class Simulasi extends Component {
       baCoverage
     };
 
-    this.props.navigation.navigate("Buat Penawaran", {dataSimulasi});
+    this.props.navigation.navigate("Buat Penawaran", { dataSimulasi });
   };
 
   render() {
@@ -484,6 +495,17 @@ class Simulasi extends Component {
               <Text style={styles.textLabel}>Earthquake</Text>
             </View>
             <View style={{ flex: 1, alignItems: "flex-end" }}>
+              {/* <CheckBox
+                checked={this.state.eqCoverage.checked}
+                onPress={() =>
+                  this.setState({
+                    eqCoverage: {
+                      checked: !this.state.eqCoverage.checked,
+                      value: "58"
+                    }
+                  })
+                }
+              /> */}
               <CheckBox
                 value={this.state.eqCoverage.checked}
                 onValueChange={() =>
@@ -511,6 +533,17 @@ class Simulasi extends Component {
               </Text>
             </View>
             <View style={{ flex: 1, alignItems: "flex-end" }}>
+            {/* <CheckBox
+                checked={this.state.stfwdCoverage.checked}
+                onPress={() =>
+                  this.setState({
+                    stfwdCoverage: {
+                      checked: !this.state.stfwdCoverage.checked,
+                      value: "58"
+                    }
+                  })
+                }
+              /> */}
               <CheckBox
                 value={this.state.stfwdCoverage.checked}
                 onValueChange={() =>
@@ -538,6 +571,17 @@ class Simulasi extends Component {
               </Text>
             </View>
             <View style={{ flex: 1, alignItems: "flex-end" }}>
+            {/* <CheckBox
+                checked={this.state.rsccCoverage.checked}
+                onPress={() =>
+                  this.setState({
+                    rsccCoverage: {
+                      checked: !this.state.rsccCoverage.checked,
+                      value: "58"
+                    }
+                  })
+                }
+              /> */}
               <CheckBox
                 value={this.state.rsccCoverage.checked}
                 onValueChange={() =>
@@ -563,6 +607,17 @@ class Simulasi extends Component {
               <Text style={styles.textLabel}>Terrorism and Sabotage (TS)</Text>
             </View>
             <View style={{ flex: 1, alignItems: "flex-end" }}>
+            {/* <CheckBox
+                checked={this.state.tsCoverage.checked}
+                onPress={() =>
+                  this.setState({
+                    tsCoverage: {
+                      checked: !this.state.tsCoverage.checked,
+                      value: "58"
+                    }
+                  })
+                }
+              /> */}
               <CheckBox
                 value={this.state.tsCoverage.checked}
                 onValueChange={() =>
@@ -588,6 +643,17 @@ class Simulasi extends Component {
               <Text style={styles.textLabel}>Third Party Liability (TPL)</Text>
             </View>
             <View style={{ flex: 1, alignItems: "flex-end" }}>
+            {/* <CheckBox
+                checked={this.state.tplCoverage.checked}
+                onPress={() =>
+                  this.setState({
+                    tplCoverage: {
+                      checked: !this.state.tplCoverage.checked,
+                      value: "58"
+                    }
+                  })
+                }
+              /> */}
               <CheckBox
                 value={this.state.tplCoverage.checked}
                 onValueChange={() =>
@@ -613,6 +679,17 @@ class Simulasi extends Component {
               <Text style={styles.textLabel}>Bengkel Authorized</Text>
             </View>
             <View style={{ flex: 1, alignItems: "flex-end" }}>
+            {/* <CheckBox
+                checked={this.state.baCoverage.checked}
+                onPress={() =>
+                  this.setState({
+                    baCoverage: {
+                      checked: !this.state.baCoverage.checked,
+                      value: "58"
+                    }
+                  })
+                }
+              /> */}
               <CheckBox
                 value={this.state.baCoverage.checked}
                 onValueChange={() =>

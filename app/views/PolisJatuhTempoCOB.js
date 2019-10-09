@@ -66,7 +66,45 @@ class PolisJatuhTempoCOB extends Component {
     return (
       <View style={styles.container}>
         <Loader loading={this.state.loading} />
-        <Input placeholder="Cari Polis" onChangeText={(val) => {this.searchFilterFunction(val)}} tStyle={{width: Dimensions.get("window").width - 30, marginBottom: 0}} />
+        {/* <Input placeholder="Cari Polis" onChangeText={(val) => {this.searchFilterFunction(val)}} tStyle={{width: Dimensions.get("window").width - 30, marginBottom: 0}} /> */}
+        <Card
+          cStyle={{
+            borderRadius: 10,
+            borderColor: "transparent",
+            shadowRadius: 10,
+            marginLeft: 0,
+            marginBottom: 0,
+            marginTop: 0,
+            marginRight: 0
+          }}
+        >
+          <CardSection
+            cStyle={{
+              backgroundColor: "rgba(255, 255, 255, 0.3)",
+              borderRadius: 10,
+              borderBottomWidth: 0,
+              padding: 0
+            }}
+          >
+            <View style={styles.searchSection}>
+              <Icon
+                style={styles.searchIcon}
+                name="search"
+                size={15}
+                color="#ddd"
+              />
+              <Input
+                tStyle={styles.input}
+                placeholder="Cari Polis"
+                placeholderTextColor="#fff"
+                underlineColorAndroid="transparent"
+                onChangeText={val => {
+                  this.searchFilterFunction(val);
+                }}
+              />
+            </View>
+          </CardSection>
+        </Card>
         <FlatList
           data={this.state.data}
           style={{ flex: 1, marginTop: 10 }}
@@ -194,6 +232,21 @@ const styles = EStyleSheet.create({
   textContent: {
     color: "black",
     fontSize: "0.75rem"
+  },
+  searchSection: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  searchIcon: {
+    paddingLeft: 15,
+    paddingRight: 15
+  },
+  input: {
+    flex: 1,
+    color: "#fff",
+    backgroundColor: "transparent"
   },
 });
 

@@ -19,6 +19,8 @@ import Loader from "../components/Loader";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { connect } from "react-redux";
 import { setModalMenu } from "../actions";
+import EStyleSheet from "react-native-extended-stylesheet";
+import Input from "../components/Input";
 
 // create a component
 class Bengkel extends Component {
@@ -29,23 +31,89 @@ class Bengkel extends Component {
       city: "",
       loading: false
     };
+    this.arrayholder = [];
   }
   componentDidMount = () => {
     this.props.dispatch(setModalMenu(false));
+    this.onWorkshopPress()
   }
   renderList = item => {
     return (
       <Card>
         <CardSection>
-          <View style={{ flex: 1 }}>
-            <View style={{ paddingLeft: 8 }}>
-              <Text>Nama : {item.name}</Text>
-              <Text>Alamat : {item.address}</Text>
-              <Text>Telepon : {item.phone_no}</Text>
-              <Text>Kota : {item.CITY}</Text>
-              <Text>Provinsi : {item.PROVINCE}</Text>
-              <Text>Kode Provinsi : {item.PROVINCE_CODE}</Text>
+          <View style={{flex: 1}}>
+            <View
+              style={{
+                paddingLeft: 20,
+                paddingRight: 20,
+                paddingTop: 20,
+                paddingBottom: 15,
+              }}>
+              <View style={styles.rowView}>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textTitle}>Nama</Text>
+                </View>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textContent}>{item.name}</Text>
+                </View>
+              </View>
+
+              <View style={styles.rowView}>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textTitle}>Alamat</Text>
+                </View>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textContent}>{item.address}</Text>
+                </View>
+              </View>
+
+              <View style={styles.rowView}>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textTitle}>Nomor Telepon</Text>
+                </View>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textContent}>{item.phone_no}</Text>
+                </View>
+              </View>
+
+              <View style={styles.rowView}>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textTitle}>Nomor Fax</Text>
+                </View>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textContent}>{item.fax_no}</Text>
+                </View>
+              </View>
+
+              <View style={styles.rowView}>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textTitle}>Kota</Text>
+                </View>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textContent}>{item.CITY}</Text>
+                </View>
+              </View>
+
+              <View style={styles.rowView}>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textTitle}>Provinsi</Text>
+                </View>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textContent}>{item.PROVINCE}</Text>
+                </View>
+              </View>
+
             </View>
+
+            
+
+            {/* <View style={styles.buttonContainer}>
+              <Button
+                bStyle={{alignSelf: 'stretch', width: undefined}}
+                onPress={() => this.onLihatPenawaranPress(item)}>
+                LIHAT PENAWARAN
+              </Button>
+            </View> */}
           </View>
         </CardSection>
       </Card>
@@ -63,64 +131,104 @@ class Bengkel extends Component {
     const { city } = this.state;
     const bengkel = await WorkshopService(city);
 
+    this.setState({
+      loading: false
+    });
     if (bengkel.status === "SUCCESS") {
       this.setState({
         Data: bengkel.data
       });
+      this.arrayholder = bengkel.data;
     } else {
       Alert.alert("Error", bengkel.message);
     }
-    this.setState({
-      loading: false
+  };
+
+  searchFilterFunction = async text => {
+    const newData = this.arrayholder.filter(item => {
+      const itemData = `${item.name.toUpperCase()} ${item.address.toUpperCase()} ${item.CITY.toUpperCase()}`;
+
+      const textData = text.toUpperCase();
+
+      return itemData.indexOf(textData) > -1;
     });
+    console.log(newData);
+    this.setState({ Data: newData });
   };
 
   render() {
     return (
       <View
-        style={{ backgroundColor: "#1A1F61", flex: 1, flexDirection: "column" }}
+        style={{
+          backgroundColor: "#1A1F61",
+          flex: 1,
+          flexDirection: "column",
+          padding: 30
+        }}
       >
         <Loader loading={this.state.loading} />
 
-        <Card>
-          <CardSection>
+        <Card
+          cStyle={{
+            borderRadius: 10,
+            borderColor: "transparent",
+            shadowRadius: 10,
+            marginLeft: 0,
+            marginBottom: 0,
+            marginTop: 0,
+            marginRight: 0
+          }}
+        >
+          <CardSection
+            cStyle={{
+              backgroundColor: "rgba(255, 255, 255, 0.3)",
+              borderRadius: 10,
+              borderBottomWidth: 0,
+              padding: 0
+            }}
+          >
             <View style={styles.searchSection}>
-              <Icon
+              {/* <Icon
                 style={styles.searchIcon}
                 name="search"
-                size={20}
+                size={15}
                 color="#ddd"
+              /> */}
+              <Image
+                resizeMode="contain"
+                style={{
+                  //paddingRight: 10,
+                  //position: "absolute",
+                  width: 15,
+                  height: 15
+                }}
+                source={require("../assets/icons/search.png")}
               />
-              <TextInput
-                style={styles.input}
+              <Input
+                tStyle={styles.input}
                 placeholder="Cari Bengkel"
+                placeholderTextColor="#fff"
                 underlineColorAndroid="transparent"
-                onChangeText={text => this.setState({ city: text })}
+                onChangeText={val => {
+                  this.searchFilterFunction(val)
+                }}
               />
-              <Icon
-                style={styles.searchIcon}
-                name="arrow-right"
-                size={25}
-                color="#06397B"
-                onPress={() => this.onWorkshopPress()}
-              />
-           </View>
+            </View>
           </CardSection>
         </Card>
-
-        <View style={{ flex: 5, marginTop: 10 }}>
+        <View style={{ flex: 5, marginTop: 29 }}>
           <Text
             style={{
-              paddingLeft: 32,
               color: "#fff",
               fontSize: 16,
-              marginBottom: 5
+              paddingLeft: 10,
+              fontWeight: "bold"
             }}
           >
             Daftar Bengkel
           </Text>
           <FlatList
-            style={styles.container}
+            style={styles.flatList}
             data={this.state.Data}
             renderItem={({ item }) => this.renderList(item)}
             keyExtractor={item => item.name}
@@ -132,65 +240,48 @@ class Bengkel extends Component {
 }
 
 // define your styles
-const styles = StyleSheet.create({
-  container: {
+const styles = EStyleSheet.create({
+  flatList: {
     flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20,
-    borderRadius: 20
+    marginTop: 15,
   },
-  listPolis: {
-    height: 35,
-    color: "black"
+  rowView: {
+    flexDirection: 'row',
+    paddingBottom: 5,
   },
   buttonContainer: {
-    paddingTop: 10,
-    alignItems: "center",
-    marginBottom: 10
-  },
-  ViewList: {
-    flex: 1,
-    padding: 10,
-    marginBottom: 20
-  },
-  ImageStyle: {
-    //padding: 1,
-    //margin: 1,
-    height: 20,
-    width: 20
-    //resizeMode: "stretch",
-    //alignItems: "center",
-  },
-  SectionStyle: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "grey",
-    borderRadius: 5
-    // margin: 22,
-    // flex: 1
-    //padding: 8
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingBottom: 20,
+    alignItems: 'center',
   },
   searchSection: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 5
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingLeft: 3,
   },
   searchIcon: {
-    padding: 8
+    paddingLeft: 15,
+    paddingRight: 15,
   },
   input: {
     flex: 1,
-    paddingTop: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
-    paddingLeft: 0,
-    backgroundColor: "#fff",
-    color: "#06397B"
-  }
+    color: '#fff',
+    backgroundColor: 'transparent',
+  },
+  textTitle: {
+    color: 'black',
+    fontSize: '0.8rem',
+    fontWeight: 'bold',
+    flex: 1,
+  },
+  textContent: {
+    color: 'black',
+    fontSize: '0.75rem',
+    flex: 1,
+  },
 });
 
 const mapStateToProps = state => {

@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Communications from "react-native-communications";
 import { connect } from "react-redux";
@@ -20,12 +20,16 @@ class MncCare extends Component {
       headerRight: (
         <View style={{ flex: 1, flexDirection: "row" }}>
           <TouchableOpacity onPress={() => params.showDialog()}>
-            <Icon
-              style={{ paddingRight: 20 }}
-              name="bell"
-              size={25}
-              color="#AE8E36"
-            />
+          <Image
+                resizeMode="contain"
+                style={{
+                  //paddingRight: 10,
+                  //position: "absolute",
+                  width: 30,
+                  height: 30
+                }}
+                source={require("../assets/icons/phone.png")}
+              />
           </TouchableOpacity>
         </View>
       )

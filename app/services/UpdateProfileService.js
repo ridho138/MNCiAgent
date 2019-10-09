@@ -1,9 +1,9 @@
 import axios from "axios";
 import { Constants } from "../utils/Constants";
-import { setEnvelope, setData, getData } from "../utils/Utils";
+import { setEnvelope, updateDate, getData } from "../utils/Utils";
 
 const UpdateProfileService = async phonenumber => {
-  const { wsUrl, wsUpdateProfile, type } = Constants;
+  const { wsUrl, wsUpdateProfile, type, KEY_DATA_USER } = Constants;
   const { username, password } = await getData(KEY_DATA_USER);
   const data = [
     {
@@ -36,11 +36,11 @@ const UpdateProfileService = async phonenumber => {
     let response = JSON.parse(dataResponseSplit[0]);
 
     if (response.status === "Success") {
-      result = response;
-      result = {
+     result = {
         status: "SUCCESS",
         message: response.message
       };
+      await updateDate(KEY_DATA_USER, JSON.stringify({ profile: {phonenumber: phonenumber} }));
     } else {
       result = {
         status: "FAILED",

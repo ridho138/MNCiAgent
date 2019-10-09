@@ -20,6 +20,7 @@ import CardSection from "../components/CardSection";
 import Modal from "react-native-modal";
 import RadioGroup from "react-native-radio-buttons-group";
 import { GetNotificationsService } from "../services/GetNotificationsService"
+import Icon from "react-native-vector-icons/FontAwesome";
 
 // create a component
 class Notifikasi extends Component {
@@ -59,16 +60,23 @@ class Notifikasi extends Component {
     const { params = {} } = navigation.state;
     return {
       headerRight: (
-        <View style={{ flex: 1, flexDirection: "row" }}>
-          <Button onPress={() => params.toggleModal()}>sort</Button>
-          {/* <TouchableOpacity onPress={() => params.toggleModal()}>
-            <Image
-              resizeMode="contain"
-              style={{ width: 30, right: 30 }}
-              source={require("../assets/icons/sort.png")}
-            />
-          </TouchableOpacity> */}
-        </View>
+        
+        <View style={{ flex: 1, flexDirection: "row", paddingRight: 30 }}>
+            <TouchableOpacity
+              onPress={() => params.toggleModal()}
+            >
+              <Image
+                resizeMode="contain"
+                style={{
+                  //paddingRight: 10,
+                  //position: "absolute",
+                  width: 30,
+                  height: 30
+                }}
+                source={require("../assets/icons/sort.png")}
+              />
+            </TouchableOpacity>
+          </View>
       )
     };
   };
@@ -83,6 +91,7 @@ class Notifikasi extends Component {
       loading: false
     });
     if (notif.status === "SUCCESS") {
+      // console.log(notif)
       this.setState({
         Data: notif.data
       });
@@ -128,17 +137,30 @@ class Notifikasi extends Component {
   };
 
   renderList = item => {
+
+    let img = ""
+    if (item.TYPE === "0"){
+      img = 'require("../assets/images/pelayanan@3x.png")'
+    } else if (item.TYPE === "1"){
+      img = 'require("../assets/images/premiBelumTerbayar@3x.png")'
+    } else if (item.TYPE === "2"){
+      img = 'require("../assets/images/agentProfile@3x.png")'
+    } else if (item.TYPE === "3"){
+      img = 'require("../assets/images/qs@3x.png.png")'
+    }   
+    console.log(img)
     return (
       <View
         style={{
           flexDirection: "row",
-          minHeight: 80,
-          margin: 5
+          minHeight: 50,
+          margin: 5,
+          paddingLeft: 15
         }}
       >
-        <View style={{ flex: 1 }}>
+        {/* <View style={{ flex: 1 }}>
           <Image
-            source={require("../assets/images/call.png")}
+            source={img}
             style={{
               flex: 1,
               alignSelf: "stretch",
@@ -147,8 +169,8 @@ class Notifikasi extends Component {
             }}
             resizeMode="center"
           />
-        </View>
-        <View style={{ flex: 3, justifyContent: "center" }}>
+        </View> */}
+        <View style={{  justifyContent: "center" }}>
           <Text>{item.MESSAGE}</Text>
         </View>
       </View>
@@ -165,7 +187,7 @@ class Notifikasi extends Component {
         <View
           style={{
             height: 1,
-            width: "80%",
+            width: "90%",
             backgroundColor: "#997A2D"
           }}
         />

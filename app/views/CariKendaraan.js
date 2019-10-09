@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component } from "react";
-import { View, Text, StyleSheet, FlatList, TextInput } from "react-native";
+import { View, Text, StyleSheet, FlatList, TextInput, Image } from "react-native";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import CardSection from "../components/CardSection";
@@ -8,6 +8,8 @@ import { GetVehicleService } from "../services/GetVehicleService";
 import Loader from "../components/Loader";
 import { toDate } from "../utils/Utils";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Input from "../components/Input";
+import EStyleSheet from "react-native-extended-stylesheet";
 
 // create a component
 class CariKendaraan extends Component {
@@ -28,28 +30,48 @@ class CariKendaraan extends Component {
     return (
       <Card>
         <CardSection>
-          <View style={{ flex: 1, borderRadius: 5 }}>
-            <View style={{ paddingLeft: 8, borderRadius: 5 }}>
-              <View style={styles.textView}>
-                <Text style={styles.text}>Code</Text>
-                <Text style={styles.text2}>{item.code}</Text>
+          <View style={{flex: 1}}>
+            <View
+              style={{
+                paddingLeft: 20,
+                paddingRight: 20,
+                paddingTop: 20,
+                paddingBottom: 15,
+              }}>
+              <View style={styles.rowView}>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textTitle}>Code</Text>
+                </View>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textContent}>{item.code}</Text>
+                </View>
               </View>
-              <View style={styles.textView}>
-                <Text style={styles.text}>Description</Text>
-                <Text style={styles.text2}>{item.description}</Text>
+
+              <View style={styles.rowView}>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textTitle}>Description</Text>
+                </View>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textContent}>{item.description}</Text>
+                </View>
               </View>
-              <View style={styles.textView}>
-                <Text style={styles.text}>Merk</Text>
-                <Text style={styles.text2}>{item.vehicle_merk}</Text>
-              </View>
-              <View style={styles.textView}>
-                <Text style={styles.text}>Model</Text>
-                <Text style={styles.text2}>{item.vehicle_model}</Text>
+
+              <View style={styles.rowView}>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textTitle}>Merk</Text>
+                </View>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textContent}>{item.vehicle_model}</Text>
+                </View>
               </View>
             </View>
 
             <View style={styles.buttonContainer}>
-              <Button onPress={() => this.onPilihPress(item)}>Pilih</Button>
+              <Button
+                bStyle={{alignSelf: 'stretch', width: undefined}}
+                onPress={() => this.onPilihPress(item)}>
+                PILIH
+              </Button>
             </View>
           </View>
         </CardSection>
@@ -79,49 +101,77 @@ class CariKendaraan extends Component {
   render() {
     return (
       <View
-        style={{ backgroundColor: "#1A1F61", flex: 1, flexDirection: "column" }}
+        style={{
+          backgroundColor: "#1A1F61",
+          flex: 1,
+          flexDirection: "column",
+          padding: 30
+        }}
       >
         <Loader loading={this.state.loading} />
 
-        <Card>
-          <CardSection>
+        <Card
+          cStyle={{
+            borderRadius: 10,
+            borderColor: "transparent",
+            shadowRadius: 10,
+            marginLeft: 0,
+            marginBottom: 0,
+            marginTop: 0,
+            marginRight: 0
+          }}
+        >
+          <CardSection
+            cStyle={{
+              backgroundColor: "rgba(255, 255, 255, 0.3)",
+              borderRadius: 10,
+              borderBottomWidth: 0,
+              padding: 0
+            }}
+          >
             <View style={styles.searchSection}>
-              <Icon
+              {/* <Icon
                 style={styles.searchIcon}
                 name="search"
-                size={20}
+                size={15}
                 color="#ddd"
+              /> */}
+              <Image
+                resizeMode="contain"
+                style={{
+                  //paddingRight: 10,
+                  //position: "absolute",
+                  width: 15,
+                  height: 15
+                }}
+                source={require("../assets/icons/search.png")}
               />
-              <TextInput
-                style={styles.input}
-                placeholder="Search Kendaraan"
+              <Input
+                tStyle={styles.input}
+                placeholder="Cari Kendaraan"
+                placeholderTextColor="#fff"
                 underlineColorAndroid="transparent"
-                onChangeText={text => this.setState({ keyword: text })}
-              />
-              <Icon
-                style={styles.searchIcon}
-                name="arrow-right"
-                size={25}
-                color="#06397B"
-                onPress={() => this.onSearchKendaraanPress()}
+                onChangeText={val => {
+                  this.setState({keyword: val})
+                }}
+                onSubmitEditing={() => this.onSearchKendaraanPress()}
               />
             </View>
           </CardSection>
         </Card>
-        <View style={{ flex: 5, marginTop: 10 }}>
+        <View style={{ flex: 5, marginTop: 29 }}>
           <Text
             style={{
-              paddingLeft: 32,
               color: "#fff",
               fontSize: 16,
-              marginBottom: 5,
-              marginTop: 10
+              paddingLeft: 10,
+              fontWeight: "bold"
             }}
           >
             Daftar Kendaraan
           </Text>
           <FlatList
-            style={styles.container}
+            style={styles.flatList}
             data={this.state.Data}
             renderItem={({ item }) => this.renderList(item)}
             keyExtractor={item => item.code}
@@ -133,54 +183,47 @@ class CariKendaraan extends Component {
 }
 
 // define your styles
-const styles = StyleSheet.create({
-  container: {
+const styles = EStyleSheet.create({
+  flatList: {
     flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20,
-    borderRadius: 20
+    marginTop: 15
+  },
+  rowView: {
+    flexDirection: "row",
+    paddingBottom: 5
   },
   buttonContainer: {
-    paddingTop: 10,
-    alignItems: "center",
-    marginBottom: 10
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingBottom: 20,
+    alignItems: "center"
   },
   searchSection: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 5
+    paddingLeft: 3
   },
   searchIcon: {
-    padding: 8
+    paddingLeft: 15,
+    paddingRight: 15
   },
   input: {
     flex: 1,
-    paddingTop: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
-    paddingLeft: 0,
-    backgroundColor: "#fff",
-    color: "#06397B"
+    color: "#fff",
+    backgroundColor: "transparent"
   },
-  text: {
+  textTitle: {
     color: "black",
-    //fontSize: 12,
-    textAlign: "left",
-    flex: 1,
-    fontWeight: "bold"
-  },
-  text2: {
-    color: "black",
-    fontSize: 12,
-    textAlign: "left",
+    fontSize: "0.8rem",
+    fontWeight: "bold",
     flex: 1
   },
-  textView: {
-    padding: 5,
-    flexDirection: "row"
+  textContent: {
+    color: "black",
+    fontSize: "0.75rem",
+    flex: 1
   }
 });
 

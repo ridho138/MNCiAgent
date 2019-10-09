@@ -8,7 +8,7 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome";
 
 import Login from "../views/Login";
-import Home from "../views/Home";
+import Home from "../views/Home_";
 import PremiumProduction from "../views/PremiumProduction";
 import PolisJatuhTempo from "../views/PolisJatuhTempo";
 import PolisJatuhTempoCOB from "../views/PolisJatuhTempoCOB";
@@ -37,6 +37,8 @@ import SplashScreen from "../views/SplashScreen";
 import ProsedurKlaim from "../views/ProsedurKlaim";
 import Produk from "../views/Produk";
 import MncCare from "../views/MncCare";
+import LihatPenawaran from "../views/LihatPenawaran"
+import ViewPdf from "../views/ViewPdf"
 
 const AppStackNavigator = createStackNavigator(
   {
@@ -205,6 +207,12 @@ const AppStackNavigator = createStackNavigator(
     },
     "MNC Care": {
       screen: MncCare
+    },
+    "Lihat Penawaran": {
+      screen: LihatPenawaran
+    },
+    "ViewPdf": {
+      screen: ViewPdf
     }
   },
   {

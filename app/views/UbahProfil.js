@@ -5,7 +5,8 @@ import {
   StyleSheet,
   TextInput,
   Dimensions,
-  ScrollView
+  ScrollView,
+  Alert
 } from "react-native";
 import Button from "../components/Button";
 import { getData, toDate } from "../utils/Utils";
@@ -65,7 +66,9 @@ class UbahProfil extends Component {
       loading: true
     });
     const ubahProfil = await UpdateProfileService(this.state.telpAgent);
-
+    this.setState({
+      loading: false
+    });
     if (ubahProfil.status === "SUCCESS") {
       Alert.alert("Info", ubahProfil.message, [
         {
@@ -76,9 +79,7 @@ class UbahProfil extends Component {
     } else {
       Alert.alert("Error", ubahProfil.message);
     }
-    this.setState({
-      loading: false
-    });
+    
   };
 
   render() {
