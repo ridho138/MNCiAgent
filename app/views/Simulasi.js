@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -6,21 +6,22 @@ import {
   TextInput,
   Dimensions,
   ScrollView,
-  Alert
-} from "react-native";
-import Button from "../components/Button";
-import DatePicker from "react-native-datepicker";
-import moment from "moment";
-import Input from "../components/Input";
-import Pickers from "../components/Pickers";
-import EStyleSheet from "react-native-extended-stylesheet";
-import { Constants } from "../utils/Constants";
-import CheckBox from "@react-native-community/checkbox";
-import RadioGroup from "react-native-radio-buttons-group";
-import { PremiumCalculationService } from "../services/PremiumCalculationService";
-import Loader from "../components/Loader";
-import Modal from "react-native-modal";
-import NumberFormat from "react-number-format";
+  Alert,
+} from 'react-native';
+import Button from '../components/Button';
+import DatePicker from 'react-native-datepicker';
+import moment from 'moment';
+import Input from '../components/Input';
+import Pickers from '../components/Pickers';
+import EStyleSheet from 'react-native-extended-stylesheet';
+import {Constants} from '../utils/Constants';
+import CheckBox from '@react-native-community/checkbox';
+import RadioGroup from 'react-native-radio-buttons-group';
+import {PremiumCalculationService} from '../services/PremiumCalculationService';
+import Loader from '../components/Loader';
+import Modal from 'react-native-modal';
+import NumberFormat from 'react-number-format';
+import { toDateWS } from "../utils/Utils"
 
 // create a component
 class Simulasi extends Component {
@@ -29,113 +30,112 @@ class Simulasi extends Component {
     this.state = {
       loading: false,
       isModalVisible: false,
-      tanggalEfektif: moment(new Date()).format("YYYY-MM-DD"),
-      premi: "",
-      materai: "",
-      biayaPolis: "",
-      kodeKendaraan: "",
-      merk: "",
-      model: "",
-      subModel: "",
-      tahunBuat: "",
-      nomorPlat: "",
-      tenor: "1",
-      paket: "COMON",
-      hargaPertanggungan: "",
-      mainCoverage: "1",
+      tanggalEfektif: moment(new Date()).format('DD/MM/YYYY'),
+      premi: '',
+      materai: '',
+      biayaPolis: '',
+      kodeKendaraan: '',
+      merk: '',
+      model: '',
+      subModel: '',
+      tahunBuat: '',
+      nomorPlat: '',
+      tenor: '1',
+      paket: 'COMON',
+      hargaPertanggungan: '',
+      mainCoverage: '1',
       pilihanTenor: [
         {
-          label: "1 Tahun",
-          value: "1"
+          label: '1 Tahun',
+          value: '1',
         },
         {
-          label: "2 Tahun",
-          value: "2"
+          label: '2 Tahun',
+          value: '2',
         },
         {
-          label: "3 Tahun",
-          value: "3"
+          label: '3 Tahun',
+          value: '3',
         },
         {
-          label: "4 Tahun",
-          value: "4"
+          label: '4 Tahun',
+          value: '4',
         },
         {
-          label: "5 Tahun",
-          value: "5"
-        }
+          label: '5 Tahun',
+          value: '5',
+        },
       ],
       pilihanPaket: [
         {
-          label: "COMPREHENSIVE + TPL",
-          value: "COMON"
+          label: 'COMPREHENSIVE + TPL',
+          value: 'COMON',
         },
         {
-          label: "COMPREHENSIVE + AOG + RSCCTS + TPL",
-          value: "COMPL"
+          label: 'COMPREHENSIVE + AOG + RSCCTS + TPL',
+          value: 'COMPL',
         },
         {
-          label: "TLO ONLY",
-          value: "TPLON"
-        }
+          label: 'TLO ONLY',
+          value: 'TPLON',
+        },
       ],
       pilihanCoverage: [
         {
-          value: "1",
-          label: "Comprehensive",
-          color: "#fff"
+          value: '1',
+          label: 'Comprehensive',
+          color: '#fff',
         },
         {
-          value: "0",
-          label: "Total lost Only",
-          color: "#fff"
-        }
+          value: '0',
+          label: 'Total lost Only',
+          color: '#fff',
+        },
       ],
       eqCoverage: {
         checked: false,
-        value: ""
+        value: '',
       },
       rsccCoverage: {
         checked: false,
-        value: ""
+        value: '',
       },
       stfwdCoverage: {
         checked: false,
-        value: ""
+        value: '',
       },
       tsCoverage: {
         checked: false,
-        value: ""
+        value: '',
       },
       tplCoverage: {
         checked: false,
-        value: ""
+        value: '',
       },
       baCoverage: {
         checked: false,
-        value: ""
-      }
+        value: '',
+      },
+      isCekNomorKendaraan: true,
     };
   }
 
   componentDidMount = () => {
-    const { navigation } = this.props;
-    const item = navigation.getParam("item");
+    const {navigation} = this.props;
+    const item = navigation.getParam('item');
     this.setState({
       kodeKendaraan: item.code,
       merk: item.vehicle_merk,
       model: item.vehicle_model,
-      subModel: item.description
+      subModel: item.description,
     });
   };
 
   toggleModal = () => {
-    this.setState({ isModalVisible: !this.state.isModalVisible });
+    this.setState({isModalVisible: !this.state.isModalVisible});
   };
 
   onHitungPremi = async () => {
-     
-    
     const {
       kodeKendaraan,
       tahunBuat,
@@ -150,79 +150,82 @@ class Simulasi extends Component {
       rsccCoverage,
       tsCoverage,
       tplCoverage,
-      baCoverage
+      baCoverage,
     } = this.state;
 
-    const plat = nomorPlat.split("-")
-    if(plat.length === 3){
-      this.setState({
-        loading: true
-      });
-      const data = {
-        package: paket,
-        vehicle_code: kodeKendaraan,
-        plat_no: plat[0],
-        tsi: hargaPertanggungan,
-        tenor: tenor,
-        manufacture_year: tahunBuat,
-        effective_date: tanggalEfektif,
-        main_coverage: mainCoverage,
-        eq_coverage: eqCoverage.value,
-        stfwd_coverage: stfwdCoverage.value,
-        rscc_coverage: rsccCoverage.value,
-        ts_coverage: tsCoverage.value,
-        tpl_coverage: tplCoverage.value,
-        ba_coverage: baCoverage.value
-      };
-      console.log(data);
-      const hitungPremi = await PremiumCalculationService(data);
-      this.setState({
-        loading: false
-      });
-  
-      if (hitungPremi.status === "SUCCESS") {
-        let premi = 0;
-        let materai = 0;
-        let biayaPolis = 0;
-  
-        hitungPremi.data.map(data => {
-          if (data.YEARS !== 0) {
-            premi += data.PREMIUM_AMMOUNT;
-          } else {
-            materai += data.COVERAGE_CODE === "stamp" ? data.PREMIUM_AMMOUNT : 0;
-            biayaPolis +=
-              data.COVERAGE_CODE === "cost" ? data.PREMIUM_AMMOUNT : 0;
-          }
-        });
-  
+    const plat = nomorPlat.split('-');
+    if (tahunBuat !== '' && hargaPertanggungan !== '' && nomorPlat !== '') {
+      if (plat.length === 3) {
         this.setState({
-          premi,
-          materai,
-          biayaPolis
+          loading: true,
         });
-  
-        this.toggleModal();
-        console.log(hitungPremi.data);
+        const data = {
+          package: paket,
+          vehicle_code: kodeKendaraan,
+          plat_no: plat[0],
+          tsi: hargaPertanggungan,
+          tenor: tenor,
+          manufacture_year: tahunBuat,
+          effective_date: toDateWS(tanggalEfektif),
+          main_coverage: mainCoverage,
+          eq_coverage: eqCoverage.value,
+          stfwd_coverage: stfwdCoverage.value,
+          rscc_coverage: rsccCoverage.value,
+          ts_coverage: tsCoverage.value,
+          tpl_coverage: tplCoverage.value,
+          ba_coverage: baCoverage.value,
+        };
+        console.log(data);
+        const hitungPremi = await PremiumCalculationService(data);
+        this.setState({
+          loading: false,
+        });
+
+        if (hitungPremi.status === 'SUCCESS') {
+          let premi = 0;
+          let materai = 0;
+          let biayaPolis = 0;
+
+          hitungPremi.data.map(data => {
+            if (data.YEARS !== 0) {
+              premi += data.PREMIUM_AMMOUNT;
+            } else {
+              materai +=
+                data.COVERAGE_CODE === 'stamp' ? data.PREMIUM_AMMOUNT : 0;
+              biayaPolis +=
+                data.COVERAGE_CODE === 'cost' ? data.PREMIUM_AMMOUNT : 0;
+            }
+          });
+
+          this.setState({
+            premi,
+            materai,
+            biayaPolis,
+          });
+
+          this.toggleModal();
+          console.log(hitungPremi.data);
+        } else {
+          Alert.alert('Error', hitungPremi.message);
+        }
       } else {
-        Alert.alert("Error", hitungPremi.message);
+        Alert.alert('Info', 'Format nomor kendaraan salah. Contoh: B-1234-ABC');
       }
+    } else {
+      Alert.alert('Info', 'Data tidak ada yang boleh kosong.');
     }
-    else {
-      Alert.alert("Info", "Format nomor kendaraan salah. Contoh: B-1234-ABC");
-    }
-    
   };
 
   onRadioButtonPress = data => {
-    this.setState({ pilihanCoverage: data });
+    this.setState({pilihanCoverage: data});
     let selectedButton = this.state.pilihanCoverage.find(
-      e => e.selected == true
+      e => e.selected == true,
     );
     selectedButton = selectedButton
       ? selectedButton.value
       : this.state.pilihanCoverage[0].label;
 
-    this.setState({ mainCoverage: selectedButton });
+    this.setState({mainCoverage: selectedButton});
   };
 
   onBuatPenawaranPress = () => {
@@ -244,7 +247,10 @@ class Simulasi extends Component {
       rsccCoverage,
       tsCoverage,
       tplCoverage,
-      baCoverage
+      baCoverage,
+      premi,
+      biayaPolis,
+      materai
     } = this.state;
     const dataSimulasi = {
       kodeKendaraan,
@@ -263,10 +269,37 @@ class Simulasi extends Component {
       rsccCoverage,
       tsCoverage,
       tplCoverage,
-      baCoverage
+      baCoverage,
+      premi,
+      biayaPolis,
+      materai
     };
 
-    this.props.navigation.navigate("Buat Penawaran", { dataSimulasi });
+    this.props.navigation.navigate('Buat Penawaran', {dataSimulasi});
+  };
+
+  cekNomorKendaraan = () => {
+    const plat = this.state.nomorPlat.split('-');
+    if (plat.length !== 3) {
+      this.setState({isCekNomorKendaraan: false});
+    } else if (plat.length === 3) {
+      this.setState({isCekNomorKendaraan: true});
+    }
+  };
+
+  hasilCekNoKend = () => {
+    if (!this.state.isCekNomorKendaraan) {
+      return (
+        <Text
+          style={{
+            color: 'red',
+            fontSize: 14,
+            paddingLeft: 10,
+          }}>
+          Format nomor kendaraan salah. Contoh: B-1234-ABC
+        </Text>
+      );
+    }
   };
 
   render() {
@@ -275,18 +308,16 @@ class Simulasi extends Component {
         <View style={styles.container}>
           <Loader loading={this.state.loading} />
           <View
-            style={{ alignSelf: "flex-start", paddingLeft: 40, paddingTop: 40 }}
-          >
+            style={{alignSelf: 'flex-start', paddingLeft: 40, paddingTop: 40}}>
             <Text style={styles.textTitle}>Data Kendaraan</Text>
           </View>
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf: 'flex-start',
               paddingLeft: 40,
               paddingTop: 21,
-              paddingBottom: 5
-            }}
-          >
+              paddingBottom: 5,
+            }}>
             <Text style={styles.textLabel}>Merk</Text>
           </View>
           <View style={styles.component}>
@@ -294,12 +325,11 @@ class Simulasi extends Component {
           </View>
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf: 'flex-start',
               paddingLeft: 40,
               paddingBottom: 5,
-              paddingTop: 15
-            }}
-          >
+              paddingTop: 15,
+            }}>
             <Text style={styles.textLabel}>Model</Text>
           </View>
           <View style={styles.component}>
@@ -307,12 +337,11 @@ class Simulasi extends Component {
           </View>
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf: 'flex-start',
               paddingLeft: 40,
               paddingBottom: 5,
-              paddingTop: 15
-            }}
-          >
+              paddingTop: 15,
+            }}>
             <Text style={styles.textLabel}>Sub Model</Text>
           </View>
           <View style={styles.component}>
@@ -321,18 +350,17 @@ class Simulasi extends Component {
 
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf: 'flex-start',
               paddingLeft: 40,
               paddingBottom: 5,
-              paddingTop: 15
-            }}
-          >
+              paddingTop: 15,
+            }}>
             <Text style={styles.textLabel}>Tahun Buat</Text>
           </View>
           <View style={styles.component}>
             <Input
               onChangeText={value => {
-                this.setState({ tahunBuat: value });
+                this.setState({tahunBuat: value});
               }}
               keyboardType="numeric"
             />
@@ -340,36 +368,35 @@ class Simulasi extends Component {
 
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf: 'flex-start',
               paddingLeft: 40,
               paddingBottom: 5,
-              paddingTop: 15
-            }}
-          >
+              paddingTop: 15,
+            }}>
             <Text style={styles.textLabel}>Nomor Kendaraan</Text>
           </View>
           <View style={styles.component}>
             <Input
               onChangeText={value => {
-                this.setState({ nomorPlat: value });
+                this.setState({nomorPlat: value});
               }}
               placeholder="B-1234-HYK"
+              onBlur={() => this.cekNomorKendaraan()}
             />
+            {this.hasilCekNoKend()}
           </View>
           <View
-            style={{ alignSelf: "flex-start", paddingLeft: 40, paddingTop: 40 }}
-          >
+            style={{alignSelf: 'flex-start', paddingLeft: 40, paddingTop: 40}}>
             <Text style={styles.textTitle}>Paket Asuransi</Text>
           </View>
 
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf: 'flex-start',
               paddingLeft: 40,
               paddingBottom: 5,
-              paddingTop: 15
-            }}
-          >
+              paddingTop: 15,
+            }}>
             <Text style={styles.textLabel}>Tanggal Efektif</Text>
           </View>
           <View style={styles.component}>
@@ -378,40 +405,39 @@ class Simulasi extends Component {
               customStyles={{
                 dateInput: {
                   borderRadius: 5,
-                  borderColor: "white",
-                  backgroundColor: "white",
-                  padding: 7
+                  borderColor: 'white',
+                  backgroundColor: 'white',
+                  padding: 7,
                   //marginBottom: 20
-                }
+                },
               }}
               date={this.state.tanggalEfektif} //initial date from state
               mode="date" //The enum of date, datetime and time
-              format="YYYY-MM-DD"
+              format="DD/MM/YYYY"
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"
               showIcon={false}
               onDateChange={date => {
-                this.setState({ tanggalEfektif: date });
+                this.setState({tanggalEfektif: date});
               }}
             />
           </View>
 
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf: 'flex-start',
               paddingLeft: 40,
               paddingBottom: 5,
-              paddingTop: 15
-            }}
-          >
+              paddingTop: 15,
+            }}>
             <Text style={styles.textLabel}>Tenor</Text>
           </View>
           <View style={styles.component}>
             <Pickers
-              pStyle={{ flex: 1 }}
+              pStyle={{flex: 1}}
               selectedValue={this.state.tenor}
               onValueChange={(itemValue, itemIndex) =>
-                this.setState({ tenor: itemValue })
+                this.setState({tenor: itemValue})
               }
               List={this.state.pilihanTenor}
             />
@@ -419,18 +445,17 @@ class Simulasi extends Component {
 
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf: 'flex-start',
               paddingLeft: 40,
               paddingBottom: 5,
-              paddingTop: 15
-            }}
-          >
+              paddingTop: 15,
+            }}>
             <Text style={styles.textLabel}>Harga Pertanggungan</Text>
           </View>
           <View style={styles.component}>
             <Input
               onChangeText={value => {
-                this.setState({ hargaPertanggungan: value });
+                this.setState({hargaPertanggungan: value});
               }}
               keyboardType="numeric"
             />
@@ -438,20 +463,19 @@ class Simulasi extends Component {
 
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf: 'flex-start',
               paddingLeft: 40,
               paddingBottom: 5,
-              paddingTop: 15
-            }}
-          >
+              paddingTop: 15,
+            }}>
             <Text style={styles.textLabel}>Paket</Text>
           </View>
           <View style={styles.component}>
             <Pickers
-              pStyle={{ flex: 1 }}
+              pStyle={{flex: 1}}
               selectedValue={this.state.paket}
               onValueChange={(itemValue, itemIndex) =>
-                this.setState({ paket: itemValue })
+                this.setState({paket: itemValue})
               }
               List={this.state.pilihanPaket}
             />
@@ -459,12 +483,11 @@ class Simulasi extends Component {
 
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf: 'flex-start',
               paddingLeft: 40,
               paddingBottom: 5,
-              paddingTop: 15
-            }}
-          >
+              paddingTop: 15,
+            }}>
             <Text style={styles.textLabel}>Main Coverage</Text>
           </View>
           <View style={styles.component}>
@@ -477,24 +500,22 @@ class Simulasi extends Component {
 
           <View
             style={{
-              alignSelf: "flex-start",
+              alignSelf: 'flex-start',
               paddingLeft: 40,
               paddingBottom: 5,
-              paddingTop: 15
-            }}
-          >
+              paddingTop: 15,
+            }}>
             <Text style={styles.textLabel}>Additional Coverage</Text>
           </View>
           <View
             style={[
               styles.component,
-              { flexDirection: "row", alignItems: "center" }
-            ]}
-          >
-            <View style={{ flex: 2 }}>
+              {flexDirection: 'row', alignItems: 'center'},
+            ]}>
+            <View style={{flex: 2}}>
               <Text style={styles.textLabel}>Earthquake</Text>
             </View>
-            <View style={{ flex: 1, alignItems: "flex-end" }}>
+            <View style={{flex: 1, alignItems: 'flex-end'}}>
               {/* <CheckBox
                 checked={this.state.eqCoverage.checked}
                 onPress={() =>
@@ -512,11 +533,11 @@ class Simulasi extends Component {
                   this.setState({
                     eqCoverage: {
                       checked: !this.state.eqCoverage.checked,
-                      value: "58"
-                    }
+                      value: '58',
+                    },
                   })
                 }
-                tintColors={{ true: "#fff", false: "#fff" }}
+                tintColors={{true: '#fff', false: '#fff'}}
               />
             </View>
           </View>
@@ -524,16 +545,15 @@ class Simulasi extends Component {
           <View
             style={[
               styles.component,
-              { flexDirection: "row", alignItems: "center" }
-            ]}
-          >
-            <View style={{ flex: 2 }}>
+              {flexDirection: 'row', alignItems: 'center'},
+            ]}>
+            <View style={{flex: 2}}>
               <Text style={styles.textLabel}>
                 Storm, Typhoon, Flood and Water Damage (STFWD)
               </Text>
             </View>
-            <View style={{ flex: 1, alignItems: "flex-end" }}>
-            {/* <CheckBox
+            <View style={{flex: 1, alignItems: 'flex-end'}}>
+              {/* <CheckBox
                 checked={this.state.stfwdCoverage.checked}
                 onPress={() =>
                   this.setState({
@@ -550,11 +570,11 @@ class Simulasi extends Component {
                   this.setState({
                     stfwdCoverage: {
                       checked: !this.state.stfwdCoverage.checked,
-                      value: "59"
-                    }
+                      value: '59',
+                    },
                   })
                 }
-                tintColors={{ true: "#fff", false: "#fff" }}
+                tintColors={{true: '#fff', false: '#fff'}}
               />
             </View>
           </View>
@@ -562,16 +582,15 @@ class Simulasi extends Component {
           <View
             style={[
               styles.component,
-              { flexDirection: "row", alignItems: "center" }
-            ]}
-          >
-            <View style={{ flex: 2 }}>
+              {flexDirection: 'row', alignItems: 'center'},
+            ]}>
+            <View style={{flex: 2}}>
               <Text style={styles.textLabel}>
                 Riot, Strike and Civil Commotion (RSCC)
               </Text>
             </View>
-            <View style={{ flex: 1, alignItems: "flex-end" }}>
-            {/* <CheckBox
+            <View style={{flex: 1, alignItems: 'flex-end'}}>
+              {/* <CheckBox
                 checked={this.state.rsccCoverage.checked}
                 onPress={() =>
                   this.setState({
@@ -588,11 +607,11 @@ class Simulasi extends Component {
                   this.setState({
                     rsccCoverage: {
                       checked: !this.state.rsccCoverage.checked,
-                      value: "63"
-                    }
+                      value: '63',
+                    },
                   })
                 }
-                tintColors={{ true: "#fff", false: "#fff" }}
+                tintColors={{true: '#fff', false: '#fff'}}
               />
             </View>
           </View>
@@ -600,14 +619,13 @@ class Simulasi extends Component {
           <View
             style={[
               styles.component,
-              { flexDirection: "row", alignItems: "center" }
-            ]}
-          >
-            <View style={{ flex: 2 }}>
+              {flexDirection: 'row', alignItems: 'center'},
+            ]}>
+            <View style={{flex: 2}}>
               <Text style={styles.textLabel}>Terrorism and Sabotage (TS)</Text>
             </View>
-            <View style={{ flex: 1, alignItems: "flex-end" }}>
-            {/* <CheckBox
+            <View style={{flex: 1, alignItems: 'flex-end'}}>
+              {/* <CheckBox
                 checked={this.state.tsCoverage.checked}
                 onPress={() =>
                   this.setState({
@@ -624,11 +642,11 @@ class Simulasi extends Component {
                   this.setState({
                     tsCoverage: {
                       checked: !this.state.tsCoverage.checked,
-                      value: "65"
-                    }
+                      value: '65',
+                    },
                   })
                 }
-                tintColors={{ true: "#fff", false: "#fff" }}
+                tintColors={{true: '#fff', false: '#fff'}}
               />
             </View>
           </View>
@@ -636,14 +654,13 @@ class Simulasi extends Component {
           <View
             style={[
               styles.component,
-              { flexDirection: "row", alignItems: "center" }
-            ]}
-          >
-            <View style={{ flex: 2 }}>
+              {flexDirection: 'row', alignItems: 'center'},
+            ]}>
+            <View style={{flex: 2}}>
               <Text style={styles.textLabel}>Third Party Liability (TPL)</Text>
             </View>
-            <View style={{ flex: 1, alignItems: "flex-end" }}>
-            {/* <CheckBox
+            <View style={{flex: 1, alignItems: 'flex-end'}}>
+              {/* <CheckBox
                 checked={this.state.tplCoverage.checked}
                 onPress={() =>
                   this.setState({
@@ -660,11 +677,11 @@ class Simulasi extends Component {
                   this.setState({
                     tplCoverage: {
                       checked: !this.state.tplCoverage.checked,
-                      value: "9"
-                    }
+                      value: '9',
+                    },
                   })
                 }
-                tintColors={{ true: "#fff", false: "#fff" }}
+                tintColors={{true: '#fff', false: '#fff'}}
               />
             </View>
           </View>
@@ -672,14 +689,13 @@ class Simulasi extends Component {
           <View
             style={[
               styles.component,
-              { flexDirection: "row", alignItems: "center" }
-            ]}
-          >
-            <View style={{ flex: 2 }}>
+              {flexDirection: 'row', alignItems: 'center'},
+            ]}>
+            <View style={{flex: 2}}>
               <Text style={styles.textLabel}>Bengkel Authorized</Text>
             </View>
-            <View style={{ flex: 1, alignItems: "flex-end" }}>
-            {/* <CheckBox
+            <View style={{flex: 1, alignItems: 'flex-end'}}>
+              {/* <CheckBox
                 checked={this.state.baCoverage.checked}
                 onPress={() =>
                   this.setState({
@@ -696,16 +712,16 @@ class Simulasi extends Component {
                   this.setState({
                     baCoverage: {
                       checked: !this.state.baCoverage.checked,
-                      value: "AW01"
-                    }
+                      value: 'AW01',
+                    },
                   })
                 }
-                tintColors={{ true: "#fff", false: "#fff" }}
+                tintColors={{true: '#fff', false: '#fff'}}
               />
             </View>
           </View>
 
-          <View style={[styles.component, { marginBottom: 30 }]}>
+          <View style={[styles.component, {marginBottom: 30}]}>
             <Button onPress={() => this.onHitungPremi()}>HITUNG PREMI</Button>
           </View>
         </View>
@@ -716,9 +732,8 @@ class Simulasi extends Component {
           onSwipeComplete={() => this.toggleModal()}
           onBackButtonPress={() => this.toggleModal()}
           style={styles.bottomModal}
-          swipeDirection={["down"]}
-          propagateSwipe
-        >
+          swipeDirection={['down']}
+          propagateSwipe>
           <View style={styles.modalContent}>
             <View style={styles.modalContainer}>
               <View>
@@ -726,75 +741,63 @@ class Simulasi extends Component {
                   style={{
                     width: 60,
                     height: 6,
-                    backgroundColor: "#997b2e",
-                    borderRadius: 5
+                    backgroundColor: '#997b2e',
+                    borderRadius: 5,
                   }}
                 />
               </View>
               <View
                 style={{
-                  flexDirection: "row",
+                  flexDirection: 'row',
                   marginBottom: 10,
-                  paddingTop: 30
-                }}
-              >
-                <Text style={{ flex: 1 }}>Hasil Hitung Premi</Text>
+                  paddingTop: 30,
+                }}>
+                <Text style={{flex: 1}}>Hasil Hitung Premi</Text>
               </View>
               <View
                 style={{
-                  flexDirection: "row",
+                  flexDirection: 'row',
                   marginBottom: 10,
-                  paddingTop: 30
-                }}
-              >
-                <Text style={{ flex: 1 }}>Premi</Text>
+                  paddingTop: 30,
+                }}>
+                <Text style={{flex: 1}}>Premi</Text>
                 <NumberFormat
                   value={this.state.premi}
-                  displayType={"text"}
+                  displayType={'text'}
                   thousandSeparator={true}
-                  renderText={value => (
-                    <Text style={{ flex: 2 }}>: {value}</Text>
-                  )}
+                  renderText={value => <Text style={{flex: 2}}>: {value}</Text>}
                 />
               </View>
               <View
                 style={{
-                  flexDirection: "row",
-                  marginBottom: 10
-                }}
-              >
-                <Text style={{ flex: 1 }}>Materai</Text>
+                  flexDirection: 'row',
+                  marginBottom: 10,
+                }}>
+                <Text style={{flex: 1}}>Materai</Text>
                 <NumberFormat
                   value={this.state.materai}
-                  displayType={"text"}
+                  displayType={'text'}
                   thousandSeparator={true}
-                  renderText={value => (
-                    <Text style={{ flex: 2 }}>: {value}</Text>
-                  )}
+                  renderText={value => <Text style={{flex: 2}}>: {value}</Text>}
                 />
               </View>
               <View
                 style={{
-                  flexDirection: "row",
-                  marginBottom: 10
-                }}
-              >
-                <Text style={{ flex: 1 }}>Biaya Polis</Text>
+                  flexDirection: 'row',
+                  marginBottom: 10,
+                }}>
+                <Text style={{flex: 1}}>Biaya Polis</Text>
                 <NumberFormat
                   value={this.state.biayaPolis}
-                  displayType={"text"}
+                  displayType={'text'}
                   thousandSeparator={true}
-                  renderText={value => (
-                    <Text style={{ flex: 2 }}>: {value}</Text>
-                  )}
+                  renderText={value => <Text style={{flex: 2}}>: {value}</Text>}
                 />
               </View>
               <View
                 style={{
-                  marginTop: 10,
-                  backgroundColor: "red"
-                }}
-              >
+                  marginTop: 10
+                }}>
                 <Button onPress={() => this.onBuatPenawaranPress()}>
                   BUAT PENAWARAN
                 </Button>
@@ -814,49 +817,49 @@ class Simulasi extends Component {
 const styles = EStyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#06397B",
-    alignItems: "center"
+    backgroundColor: '#06397B',
+    alignItems: 'center',
   },
   textTitle: {
-    color: "white",
-    fontSize: "1rem",
-    fontWeight: "bold"
+    color: 'white',
+    fontSize: '1rem',
+    fontWeight: 'bold',
   },
   textLabel: {
-    color: "#fff",
-    fontSize: "0.8rem"
+    color: '#fff',
+    fontSize: '0.8rem',
   },
   component: {
-    paddingLeft: 35,
+    paddingLeft: 40,
     paddingRight: 35,
-    width: "100%"
+    width: '100%',
   },
   datePicker: {
     // alignSelf: "stretch"
-    width: Dimensions.get("window").width - 70
+    width: Dimensions.get('window').width - 70,
     // marginLeft: 5,
     // marginRight: 5
   },
   bottomModal: {
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
     marginLeft: 0,
     marginRight: 0,
-    marginBottom: 0
+    marginBottom: 0,
   },
   modalContent: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     paddingRight: 40,
     paddingLeft: 40,
     paddingTop: 20,
     paddingBottom: 10,
-    height: Dimensions.get("window").height / 2
+    height: Dimensions.get('window').height / 2,
   },
   modalContainer: {
     flex: 1,
-    alignItems: "center"
-  }
+    alignItems: 'center',
+  },
 });
 //make this component available to the app
 export default Simulasi;

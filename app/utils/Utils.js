@@ -76,6 +76,13 @@ const toTime = date => {
   return result;
 };
 
+const toDateWS = date => {
+  if(date){
+    const dateSplit = date.split("/")
+    return `${dateSplit[2]}-${dateSplit[1]}-${dateSplit[0]}`
+  }
+}
+
 const tes = async () => {
   const Datax = await AsyncStorage.getItem("KEY_NOTIF");
   return Datax;
@@ -128,5 +135,6 @@ export {
   notifCount,
   setEnvelope,
   validateEmail,
-  updateDate
+  updateDate,
+  toDateWS
 };

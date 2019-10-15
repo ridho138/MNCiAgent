@@ -1,16 +1,26 @@
 //import liraries
-import React, { Component } from "react";
-import { View, Text, StyleSheet, FlatList, TextInput, Image } from "react-native";
-import Button from "../components/Button";
-import Card from "../components/Card";
-import CardSection from "../components/CardSection";
-import { BranchService } from "../services/BranchService";
-import Loader from "../components/Loader";
-import Icon from "react-native-vector-icons/FontAwesome";
-import { connect } from "react-redux";
-import { setModalMenu } from "../actions";
-import Input from "../components/Input";
-import EStyleSheet from "react-native-extended-stylesheet";
+import React, {Component} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TextInput,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+import Button from '../components/Button';
+import Card from '../components/Card';
+import CardSection from '../components/CardSection';
+import {BranchService} from '../services/BranchService';
+import Loader from '../components/Loader';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {connect} from 'react-redux';
+import {setModalMenu} from '../actions';
+import Input from '../components/Input';
+import EStyleSheet from 'react-native-extended-stylesheet';
+import Modal from 'react-native-modal';
 
 // create a component
 class Kantor extends Component {
@@ -18,15 +28,20 @@ class Kantor extends Component {
     super(props);
     this.state = {
       Data: null,
-      keyword: "",
-      loading: false
+      keyword: 'Kantor Pusat',
+      loading: false,
+      isModalVisible: false,
     };
     this.arrayholder = [];
   }
   componentDidMount = () => {
     this.props.dispatch(setModalMenu(false));
-    this.onSearchOfficePress()
-  }
+    this.onSearchOfficePress();
+  };
+
+  toggleModal = () => {
+    this.setState({isModalVisible: !this.state.isModalVisible});
+  };
 
   renderList = item => {
     return (
@@ -84,113 +99,161 @@ class Kantor extends Component {
 
   onSearchOfficePress = async () => {
     this.setState({
-      loading: true
+      loading: true,
     });
-    const { keyword } = this.state;
+    const {keyword} = this.state;
     const officeData = await BranchService(keyword);
     this.setState({
-      loading: false
+      loading: false,
     });
-    if (officeData.status === "SUCCESS") {
+    if (officeData.status === 'SUCCESS') {
       this.setState({
-        Data: officeData.data
+        Data: officeData.data,
       });
       this.arrayholder = officeData.data;
+      this.searchFilterFunction("HO")
     } else {
-      Alert.alert("Error", officeData.message);
+      Alert.alert('Error', officeData.message);
     }
+  };
+
+  onFilterPress = text => {
+    this.setState({keyword: text});
+    this.toggleModal();
+    let filter = ''
+    if(text === "Kantor Pusat"){
+      filter = 'HO'
+    } else if(text === "Kantor Cabang"){
+      filter = 'BRANC'
+    } else if(text === "Kantor Pemasaran"){
+      filter = 'REP'
+    }
+    this.searchFilterFunction(filter)
   };
 
   searchFilterFunction = async text => {
     const newData = this.arrayholder.filter(item => {
-      const itemData = `${item.ADDRESS.toUpperCase()} ${item.NAME.toUpperCase()}`;
+      const itemData = `${item.BRANCH_TYPE_GSC.toUpperCase()}`;
 
       const textData = text.toUpperCase();
 
       return itemData.indexOf(textData) > -1;
     });
-    console.log(newData);
-    this.setState({ Data: newData });
+    
+    this.setState({Data: newData});
   };
 
   render() {
     return (
       <View
         style={{
-          backgroundColor: "#1A1F61",
+          backgroundColor: '#1A1F61',
           flex: 1,
-          flexDirection: "column",
-          padding: 30
-        }}
-      >
+          flexDirection: 'column',
+          padding: 30,
+        }}>
         <Loader loading={this.state.loading} />
 
-        <Card
-          cStyle={{
-            borderRadius: 10,
-            borderColor: "transparent",
-            shadowRadius: 10,
-            marginLeft: 0,
-            marginBottom: 0,
-            marginTop: 0,
-            marginRight: 0
-          }}
-        >
-          <CardSection
-            cStyle={{
-              backgroundColor: "rgba(255, 255, 255, 0.3)",
-              borderRadius: 10,
-              borderBottomWidth: 0,
-              padding: 0
-            }}
-          >
-            <View style={styles.searchSection}>
-              {/* <Icon
-                style={styles.searchIcon}
-                name="search"
-                size={15}
-                color="#ddd"
-              /> */}
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex: 5, flexDirection: 'column'}}>
+            <Card
+              cStyle={{
+                borderRadius: 10,
+                borderColor: 'transparent',
+                shadowRadius: 10,
+                marginLeft: 0,
+                marginBottom: 0,
+                marginTop: 0,
+                marginRight: 0,
+              }}>
+              <CardSection
+                cStyle={{
+                  // backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                  borderRadius: 10,
+                  borderBottomWidth: 0,
+                  padding: 0,
+                }}>
+                <View style={styles.searchSection}>
+                  <Input
+                    tStyle={styles.input}
+                    editable={false}
+                    value={this.state.keyword}
+                  />
+                </View>
+              </CardSection>
+            </Card>
+          </View>
+          <View
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <TouchableOpacity onPress={() => this.toggleModal()}>
               <Image
                 resizeMode="contain"
-                style={{
-                  //paddingRight: 10,
-                  //position: "absolute",
-                  width: 15,
-                  height: 15
-                }}
-                source={require("../assets/icons/search.png")}
+                // style={{
+                //   width: 15,
+                //   height: 15,
+                // }}
+                source={require('../assets/icons/down.png')}
               />
-              <Input
-                tStyle={styles.input}
-                placeholder="Cari Kantor"
-                placeholderTextColor="#fff"
-                underlineColorAndroid="transparent"
-                onChangeText={val => {
-                  this.searchFilterFunction(val)
-                }}
-              />
-            </View>
-          </CardSection>
-        </Card>
-        <View style={{ flex: 5, marginTop: 29 }}>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={{flex: 5, marginTop: 29}}>
           <Text
             style={{
-              color: "#fff",
+              color: '#fff',
               fontSize: 16,
               paddingLeft: 10,
-              fontWeight: "bold"
-            }}
-          >
+              fontWeight: 'bold',
+            }}>
             Daftar Kantor
           </Text>
           <FlatList
             style={styles.flatList}
             data={this.state.Data}
-            renderItem={({ item }) => this.renderList(item)}
+            renderItem={({item}) => this.renderList(item)}
             keyExtractor={item => item.code}
           />
         </View>
+
+        <Modal
+          isVisible={this.state.isModalVisible}
+          onBackdropPress={() => this.toggleModal()}
+          onSwipeComplete={() => this.toggleModal()}
+          onBackButtonPress={() => this.toggleModal()}
+          style={styles.bottomModal}
+          swipeDirection={['down']}
+          propagateSwipe>
+          <View style={styles.modalContent}>
+            <View style={styles.modalContainer}>
+              <View>
+                <View
+                  style={{
+                    width: 60,
+                    height: 6,
+                    backgroundColor: '#997b2e',
+                    borderRadius: 5,
+                  }}
+                />
+              </View>
+              <View style={{padding: 10, marginTop: 20}}>
+                <TouchableOpacity onPress={() => this.onFilterPress('Kantor Pusat')}>
+                  <Text style={styles.textBranch}>Kantor Pusat</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{padding: 10}}>
+                <TouchableOpacity onPress={() => this.onFilterPress('Kantor Cabang')}>
+                  <Text style={styles.textBranch}>Kantor Cabang</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{padding: 10}}>
+                <TouchableOpacity onPress={() => this.onFilterPress('Kantor Pemasaran')}>
+                  <Text style={styles.textBranch}>Kantor Pemasaran</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -225,8 +288,7 @@ const styles = EStyleSheet.create({
   },
   input: {
     flex: 1,
-    color: '#fff',
-    backgroundColor: 'transparent',
+    color: '#000',
   },
   textTitle: {
     color: 'black',
@@ -239,11 +301,36 @@ const styles = EStyleSheet.create({
     fontSize: '0.75rem',
     flex: 1,
   },
+  textBranch: {
+    color: 'black',
+    fontSize: '0.8rem',
+    fontWeight: 'bold',
+  },
+  bottomModal: {
+    justifyContent: 'flex-end',
+    marginLeft: 0,
+    marginRight: 0,
+    marginBottom: 0,
+  },
+  modalContent: {
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    backgroundColor: 'white',
+    paddingRight: 40,
+    paddingLeft: 40,
+    paddingTop: 20,
+    paddingBottom: 10,
+    height: Dimensions.get('window').height / 3,
+  },
+  modalContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
 });
 
 const mapStateToProps = state => {
   return {
-    data: state.dataModalMenu.isOpen
+    data: state.dataModalMenu.isOpen,
   };
 };
 

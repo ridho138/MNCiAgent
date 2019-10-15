@@ -44,7 +44,7 @@ const GetVehicleService = async keyword => {
     } else {
       result = {
         status: "FAILED",
-        message: "Invalid NIK and/or Password"
+        message: "Data tidak ditemukan"
       };
     }
   } catch (error) {

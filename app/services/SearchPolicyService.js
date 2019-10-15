@@ -49,7 +49,7 @@ const SearchPolicyService = async keyword => {
     } else {
       result = {
         status: "FAILED",
-        message: response.message
+        message: "Data tidak ditemukan."
       };
     }
   } catch (error) {

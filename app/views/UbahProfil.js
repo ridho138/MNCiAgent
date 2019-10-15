@@ -153,6 +153,7 @@ class UbahProfil extends Component {
                 marginBottom: 35,
                 borderRadius: 5
               }}
+              editable={false}
               placeholder="mnc-insurance@gmail.com"
               underlineColorAndroid="transparent"
               value={email}

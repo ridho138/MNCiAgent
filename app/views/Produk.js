@@ -24,6 +24,7 @@ class Produk extends Component {
             <Image
               source={require("../assets/images/total_care.png")}
               style={styles.ImageStyle}
+              resizeMode="center"
             />
           </View>
         </View>
@@ -38,6 +39,7 @@ class Produk extends Component {
             <Image
               source={require("../assets/images/personal_accident.png")}
               style={styles.ImageStyle}
+              resizeMode="center"
             />
           </View>
         </View>
@@ -53,7 +55,8 @@ class Produk extends Component {
           <View style={styles.ViewImage}>
             <Image
               source={require("../assets/images/home_express.png")}
-              style={{ height: 30, width: 100 }}
+              style={styles.ImageStyle}
+              resizeMode="center"
             />
           </View>
         </View>
@@ -75,7 +78,7 @@ class Produk extends Component {
           <View style={{ flex: 2 }}>
             <Text style={{ textAlign: "right", marginRight: 10 }}>
               Asuransi perjalanan yang memberikan kenyamanan Anda dengan
-              perlindungan atas kehilangan bagasi, keterlambatan perjalanandan
+              perlindungan atas kehilangan bagasi, keterlambatan perjalanan dan
               lainnya.
             </Text>
           </View>
@@ -83,6 +86,7 @@ class Produk extends Component {
             <Image
               source={require("../assets/images/travel_express.png")}
               style={styles.ImageStyle}
+              resizeMode="center"
             />
           </View>
         </View>

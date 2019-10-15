@@ -65,17 +65,18 @@ const FirstReportClaimService = async ({
     },
     {
       name: "referenceno",
-      value: ""
+      value: "-"
     },
     {
       name: "insuredobject",
       value: "MOTOR VEHICLE"
     }
   ];
-
+  
   const envelope = await setEnvelope(wsFirstReportClaim, data);
   let result;
 
+  console.log(envelope)
   try {
     let postService = await axios.post(wsUrl, envelope, {
       headers: { "Content-Type": "application/soap+xml" }
@@ -83,12 +84,12 @@ const FirstReportClaimService = async ({
     let dataResponse = await postService.data;
     let dataResponseSplit = dataResponse.split("<?xml");
     let response = JSON.parse(dataResponseSplit[0]);
-
-    if (response[0] !== "" && response[0] !== undefined) {
+    console.log(dataResponse)
+    if (response.status === "Success") {
       result = response;
       result = {
         status: "SUCCESS",
-        data: response
+        data: response.message
       };
     } else {
       result = {
@@ -102,7 +103,7 @@ const FirstReportClaimService = async ({
       message: JSON.stringify(error.message)
     };
   }
-
+  console.log(result)
   return result;
 };
 

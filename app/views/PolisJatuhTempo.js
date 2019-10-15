@@ -1,17 +1,26 @@
-import React, { Component } from "react";
-import { View, Text, Alert, Dimensions, FlatList } from "react-native";
-import { ExpiryPolicyGroupService } from "../services/ExpiryPolicyGroupService";
-import Loader from "../components/Loader";
-import Button from "../components/Button";
-import Input from "../components/Input";
-import { connect } from "react-redux";
-import { setModalMenu } from "../actions";
-import DatePicker from "react-native-datepicker";
-import moment from "moment";
-import EStyleSheet from "react-native-extended-stylesheet";
-import Modal from "react-native-modal";
-import NumberFormat from "react-number-format";
-import Icon from "react-native-vector-icons/FontAwesome";
+import React, {Component} from 'react';
+import {
+  View,
+  Text,
+  Alert,
+  Dimensions,
+  FlatList,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
+import {ExpiryPolicyGroupService} from '../services/ExpiryPolicyGroupService';
+import Loader from '../components/Loader';
+import Button from '../components/Button';
+import Input from '../components/Input';
+import {connect} from 'react-redux';
+import {setModalMenu} from '../actions';
+import DatePicker from 'react-native-datepicker';
+import moment from 'moment';
+import EStyleSheet from 'react-native-extended-stylesheet';
+import Modal from 'react-native-modal';
+import NumberFormat from 'react-number-format';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {toDateWS} from '../utils/Utils';
 
 // create a component
 class PolisJatuhTempo extends Component {
@@ -20,10 +29,10 @@ class PolisJatuhTempo extends Component {
     this.state = {
       loading: false,
       isModalVisible: false,
-      dariTanggal: moment(new Date()).format("YYYY-MM-DD"),
-      sampaiTanggal: moment(new Date()).format("YYYY-MM-DD"),
-      modalHeight: Dimensions.get("window").height / 2,
-      data: null
+      dariTanggal: moment(new Date()).format('DD/MM/YYYY'),
+      sampaiTanggal: moment(new Date()).format('DD/MM/YYYY'),
+      modalHeight: Dimensions.get('window').height / 2,
+      data: null,
     };
   }
 
@@ -32,42 +41,38 @@ class PolisJatuhTempo extends Component {
   }
 
   toggleModal = () => {
-    this.setState({ isModalVisible: !this.state.isModalVisible });
+    this.setState({isModalVisible: !this.state.isModalVisible});
   };
 
   swipeModal = () => {
-    this.setState({ modalHeight: Dimensions.get("window").height / 4 });
+    this.setState({modalHeight: Dimensions.get('window').height / 4});
   };
 
   onSendPress = async () => {
-    this.setState({
-      loading: true
-    });
+    const {dariTanggal, sampaiTanggal} = this.state;
 
-    const { dariTanggal, sampaiTanggal } = this.state;
-
-    if (dariTanggal !== "" && sampaiTanggal !== "") {
+    if (dariTanggal !== '' && sampaiTanggal !== '') {
+      this.setState({
+        loading: true,
+      });
       const expiryPolicy = await ExpiryPolicyGroupService(
-        dariTanggal,
-        sampaiTanggal
+        toDateWS(dariTanggal),
+        toDateWS(sampaiTanggal),
       );
       this.setState({
-        loading: false
+        loading: false,
       });
 
-      if (expiryPolicy.status === "SUCCESS") {
+      if (expiryPolicy.status === 'SUCCESS') {
         this.setState({
-          data: expiryPolicy.data
+          data: expiryPolicy.data,
         });
         this.toggleModal();
       } else {
-        Alert.alert("Error", expiryPolicy.message);
+        Alert.alert('Error', expiryPolicy.message);
       }
     } else {
-      this.setState({
-        loading: false
-      });
-      Alert.alert("Error", "NIK and/or Password cannot be empty.");
+      Alert.alert('Error', 'Data tidak ada yang boleh kosong.');
     }
   };
 
@@ -76,9 +81,9 @@ class PolisJatuhTempo extends Component {
       <View
         style={{
           height: 1,
-          width: "90%",
-          backgroundColor: "#CED0CE",
-          marginLeft: "5%"
+          width: '90%',
+          backgroundColor: '#CED0CE',
+          marginLeft: '5%',
         }}
       />
     );
@@ -86,12 +91,12 @@ class PolisJatuhTempo extends Component {
 
   onExpiryPolicyCOBPress = cob => {
     this.toggleModal();
-    const { dariTanggal, sampaiTanggal } = this.state;
+    const {dariTanggal, sampaiTanggal} = this.state;
 
-    this.props.navigation.navigate("Daftar Polis Jatuh Tempo", {
-      dariTanggal,
-      sampaiTanggal,
-      cob
+    this.props.navigation.navigate('Daftar Polis Jatuh Tempo', {
+      dariTanggal: toDateWS(dariTanggal),
+      sampaiTanggal: toDateWS(sampaiTanggal),
+      cob,
     });
   };
 
@@ -99,10 +104,10 @@ class PolisJatuhTempo extends Component {
     return (
       <View style={styles.container}>
         <Loader loading={this.state.loading} />
-        <View style={{ marginBottom: 15, marginLeft: 5 }}>
+        <View style={{marginBottom: 15, marginLeft: 5}}>
           <Text style={styles.textTitle}>Polis (Tanggal Post)</Text>
         </View>
-        <View style={{ marginBottom: 5, marginLeft: 5 }}>
+        <View style={{marginBottom: 5, marginLeft: 5}}>
           <Text style={styles.textDate}>Dari Tanggal</Text>
         </View>
         <View>
@@ -111,22 +116,22 @@ class PolisJatuhTempo extends Component {
             customStyles={{
               dateInput: {
                 borderRadius: 5,
-                borderColor: "white",
-                backgroundColor: "white"
-              }
+                borderColor: 'white',
+                backgroundColor: 'white',
+              },
             }}
             date={this.state.dariTanggal} //initial date from state
             mode="date" //The enum of date, datetime and time
-            format="YYYY-MM-DD"
+            format="DD/MM/YYYY"
             confirmBtnText="Confirm"
             cancelBtnText="Cancel"
             showIcon={false}
             onDateChange={date => {
-              this.setState({ dariTanggal: date });
+              this.setState({dariTanggal: date});
             }}
           />
         </View>
-        <View style={{ marginBottom: 5, marginTop: 10, marginLeft: 5 }}>
+        <View style={{marginBottom: 5, marginTop: 10, marginLeft: 5}}>
           <Text style={styles.textDate}>Sampai Tanggal</Text>
         </View>
         <View>
@@ -135,23 +140,23 @@ class PolisJatuhTempo extends Component {
             customStyles={{
               dateInput: {
                 borderRadius: 5,
-                borderColor: "white",
-                backgroundColor: "white"
-              }
+                borderColor: 'white',
+                backgroundColor: 'white',
+              },
             }}
             date={this.state.sampaiTanggal} //initial date from state
             mode="date" //The enum of date, datetime and time
-            format="YYYY-MM-DD"
+            format="DD/MM/YYYY"
             confirmBtnText="Confirm"
             cancelBtnText="Cancel"
             showIcon={false}
             onDateChange={date => {
-              this.setState({ sampaiTanggal: date });
+              this.setState({sampaiTanggal: date});
             }}
           />
         </View>
 
-        <View style={{ marginTop: 20 }}>
+        <View style={{marginTop: 20}}>
           <Button onPress={this.onSendPress}>KIRIM</Button>
         </View>
 
@@ -161,68 +166,62 @@ class PolisJatuhTempo extends Component {
           onSwipeComplete={() => this.toggleModal()}
           onBackButtonPress={() => this.toggleModal()}
           style={styles.bottomModal}
-          swipeDirection={["down"]}
-          propagateSwipe
-        >
-          <View
-            style={[styles.modalContent, { height: this.state.modalHeight }]}
-          >
+          swipeDirection={['down']}
+          propagateSwipe>
+          <View style={[styles.modalContent, {height: this.state.modalHeight}]}>
             <View style={styles.modalContainer}>
               <View>
                 <View
                   style={{
                     width: 60,
                     height: 6,
-                    backgroundColor: "#AE8E36",
-                    borderRadius: 5
+                    backgroundColor: '#AE8E36',
+                    borderRadius: 5,
                   }}
                 />
               </View>
-              <View style={{ alignSelf: "flex-start", padding: 15 }}>
+              <View style={{alignSelf: 'flex-start', padding: 15}}>
                 <Text>Daftar Polis Jatuh Tempo</Text>
               </View>
 
               <FlatList
                 data={this.state.data}
-                style={{ width: "100%", marginTop: 15 }}
+                style={{width: '100%', marginTop: 15}}
                 ItemSeparatorComponent={this.renderSeparator}
                 keyExtractor={item => item.COB}
-                renderItem={({ item }) => {
+                renderItem={({item}) => {
                   return (
                     <View
                       style={{
                         flex: 1,
-                        justifyContent: "center",
-                        alignItems: "center",
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         marginBottom: 15,
                         marginTop: 15,
-                        flexDirection: "row"
-                      }}
-                    >
-                      <View style={{ flex: 2, paddingLeft: 20 }}>
+                        flexDirection: 'row',
+                      }}>
+                      <View style={{flex: 2, paddingLeft: 20}}>
                         <Text>COB</Text>
                         <Text>Total Polis</Text>
                       </View>
 
-                      <View style={{ flex: 2 }}>
+                      <View style={{flex: 2}}>
                         <Text>{item.COB}</Text>
                         <NumberFormat
                           value={item.POLICY}
-                          displayType={"text"}
+                          displayType={'text'}
                           thousandSeparator={true}
                           renderText={value => <Text>{value}</Text>}
                         />
                       </View>
 
-                      <View style={{ flex: 1 }}>
-                        <Icon
-                          name="chevron-right"
-                          color="#AE8E36"
-                          size={30}
+                      <View style={{flex: 1}}>
+                        <TouchableOpacity
                           onPress={() => {
                             this.onExpiryPolicyCOBPress(item.COB_CODE);
-                          }}
-                        />
+                          }}>
+                          <Image source={require('../assets/icons/next.png')} />
+                        </TouchableOpacity>
                       </View>
                     </View>
                   );
@@ -240,43 +239,43 @@ class PolisJatuhTempo extends Component {
 const styles = EStyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#06397B",
-    padding: 20
+    backgroundColor: '#06397B',
+    padding: 20,
   },
   textTitle: {
-    color: "white",
-    fontSize: "1rem"
+    color: 'white',
+    fontSize: '1rem',
   },
   textDate: {
-    color: "#E6E6FA",
-    fontSize: "0.8rem"
+    color: '#E6E6FA',
+    fontSize: '0.8rem',
   },
   datePicker: {
-    width: Dimensions.get("window").width - 50,
+    width: Dimensions.get('window').width - 50,
     marginLeft: 5,
-    marginRight: 5
+    marginRight: 5,
   },
   bottomModal: {
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
     marginLeft: 0,
     marginRight: 0,
-    marginBottom: 0
+    marginBottom: 0,
   },
   modalContent: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    backgroundColor: "white",
-    padding: 10
+    backgroundColor: 'white',
+    padding: 10,
   },
   modalContainer: {
     flex: 1,
-    alignItems: "center"
-  }
+    alignItems: 'center',
+  },
 });
 
 const mapStateToProps = state => {
   return {
-    data: state.dataModalMenu.isOpen
+    data: state.dataModalMenu.isOpen,
   };
 };
 

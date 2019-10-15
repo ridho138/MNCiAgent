@@ -55,7 +55,7 @@ class ProsedurKlaim extends Component {
           <View style={{ flex: 2 }}>
             <Text style={styles.Prosedur}>Customer Service</Text>
             <Text style={styles.SubProsedur}>
-              Memberikan informasi kepda surveyor
+              Memberikan informasi kepada surveyor
             </Text>
           </View>
           <View style={styles.ViewImage}>

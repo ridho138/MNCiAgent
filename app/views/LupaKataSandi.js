@@ -1,16 +1,16 @@
-import React, { Component } from "react";
+import React, {Component} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
   Dimensions,
-  Alert
-} from "react-native";
-import Button from "../components/Button";
-import Loader from "../components/Loader";
-import { validateEmail } from "../utils/Utils";
-import { ForgotPasswordService } from "../services/ForgotPasswordService";
+  Alert,
+} from 'react-native';
+import Button from '../components/Button';
+import Loader from '../components/Loader';
+import {validateEmail} from '../utils/Utils';
+import {ForgotPasswordService} from '../services/ForgotPasswordService';
 
 // create a component
 class LupaKataSandi extends Component {
@@ -18,34 +18,38 @@ class LupaKataSandi extends Component {
     super(props);
     this.state = {
       //Data: null,
-      email: "",
-      loading: false
+      email: '',
+      loading: false,
     };
   }
 
   onSendPress = async () => {
-    const { email } = this.state;
-    if (validateEmail(email)) {
-      this.setState({
-        loading: true
-      });
-      const lupaKataSandi = await ForgotPasswordService(email);
+    const {email} = this.state;
+    if (email !== '') {
+      if (validateEmail(email)) {
+        this.setState({
+          loading: true,
+        });
+        const lupaKataSandi = await ForgotPasswordService(email);
 
-      if (lupaKataSandi.status === "SUCCESS") {
-        Alert.alert("Info", lupaKataSandi.message, [
-          {
-            text: "OK",
-            onPress: () => this.props.navigation.navigate("Login")
-          }
-        ]);
+        if (lupaKataSandi.status === 'SUCCESS') {
+          Alert.alert('Info', lupaKataSandi.message, [
+            {
+              text: 'OK',
+              onPress: () => this.props.navigation.navigate('Login'),
+            },
+          ]);
+        } else {
+          Alert.alert('Info', lupaKataSandi.message);
+        }
+        this.setState({
+          loading: false,
+        });
       } else {
-        Alert.alert("Info", lupaKataSandi.message);
+        Alert.alert('Info', 'Format Email salah.');
       }
-      this.setState({
-        loading: false
-      });
     } else {
-      Alert.alert("Info", "Format Email salah.");
+      Alert.alert('Info', 'Email tidak boleh kosong.');
     }
   };
 
@@ -54,20 +58,20 @@ class LupaKataSandi extends Component {
       <View style={styles.container}>
         <Loader loading={this.state.loading} />
         <View style={styles.formContainer}>
-          <View style={{ padding: 5, flexDirection: "row", marginBottom: 15 }}>
+          <View style={{padding: 5, flexDirection: 'row', marginBottom: 15}}>
             <Text style={styles.Text}>
               Masukkan alamat email Anda, kata sandi baru akan dikirim melalui
               email.
             </Text>
           </View>
 
-          <View style={{ padding: 5, flexDirection: "row" }}>
+          <View style={{padding: 5, flexDirection: 'row'}}>
             <Text style={styles.Text}>Alamat Email</Text>
           </View>
           <TextInput
             style={styles.input}
             underlineColorAndroid="transparent"
-            onChangeText={text => this.setState({ email: text })}
+            onChangeText={text => this.setState({email: text})}
             keyboardType="email-address"
           />
 
@@ -82,26 +86,26 @@ class LupaKataSandi extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#143260"
+    backgroundColor: '#143260',
   },
   formContainer: {
     flex: 2,
     padding: 20,
-    alignItems: "center",
-    justifyContent: "flex-start"
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   input: {
-    width: Dimensions.get("window").width - 50,
-    backgroundColor: "#fff",
+    width: Dimensions.get('window').width - 50,
+    backgroundColor: '#fff',
     marginBottom: 35,
-    borderRadius: 5
+    borderRadius: 5,
   },
   Text: {
-    color: "white",
+    color: 'white',
     fontSize: 12,
-    textAlign: "left",
-    flex: 1
-  }
+    textAlign: 'left',
+    flex: 1,
+  },
 });
 
 //make this component available to the app

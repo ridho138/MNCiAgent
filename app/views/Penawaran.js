@@ -1,17 +1,17 @@
 //import liraries
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, FlatList, Alert, Image} from 'react-native';
+import {View, Text, StyleSheet, FlatList, Alert, Image, TouchableOpacity} from 'react-native';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import Card from '../components/Card';
 import CardSection from '../components/CardSection';
 import Loader from '../components/Loader';
-import {toDate} from '../utils/Utils';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import {GetQuotationService} from '../services/GetQuotationService';
 import {connect} from 'react-redux';
 import {setModalMenu} from '../actions';
 import EStyleSheet from 'react-native-extended-stylesheet';
+import {getData} from '../utils/Utils';
+import {Constants} from '../utils/Constants';
 
 // create a component
 class Penawaran extends Component {
@@ -22,6 +22,8 @@ class Penawaran extends Component {
       //   keyword: "",
       loading: false,
       Data: [],
+      hasilFilter: '',
+      keyword: ''
     };
     this.arrayholder = [];
   }
@@ -32,21 +34,32 @@ class Penawaran extends Component {
       loading: true,
     });
     const penawaran = await GetQuotationService();
+    let dataStorage = await getData(Constants.KEY_DATA_PENAWARAN);
     this.setState({
       loading: false,
     });
     if (penawaran.status === 'SUCCESS') {
+      let dataPenawaran = penawaran.data;
+      if (dataStorage) {
+        dataPenawaran = [...dataStorage, ...penawaran.data ];
+      }
+      console.log(dataPenawaran);
       this.setState({
-        Data: penawaran.data,
+        Data: dataPenawaran,
       });
-      this.arrayholder = penawaran.data;
+      this.arrayholder = dataPenawaran;
     } else {
       Alert.alert('Error', penawaran.message);
     }
   };
 
   onLihatPenawaranPress = item => {
-    this.props.navigation.navigate('Lihat Penawaran', {item});
+    if(item.STATUS === 'APPROVED'){
+      this.props.navigation.navigate('Lihat Penawaran', {item});
+    }else if(item.STATUS === 'DRAFT'){
+      this.props.navigation.navigate('Buat Penawaran', {dataDraft:item, title: "Draft"});
+    }
+    
   };
 
   renderList = item => {
@@ -61,6 +74,14 @@ class Penawaran extends Component {
                 paddingTop: 20,
                 paddingBottom: 15,
               }}>
+              <View style={styles.rowView}>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textTitle}>Status</Text>
+                </View>
+                <View style={{flex: 1}}>
+                  <Text style={styles.textContent}>{item.STATUS}</Text>
+                </View>
+              </View>
               <View style={styles.rowView}>
                 <View style={{flex: 1}}>
                   <Text style={styles.textTitle}>Nomor Penawaran</Text>
@@ -111,7 +132,8 @@ class Penawaran extends Component {
     );
   };
 
-  searchFilterFunction = async text => {
+  searchFilterFunction = () => {
+    const text = this.state.keyword;
     const newData = this.arrayholder.filter(item => {
       const itemData = `${item.QS_NO.toUpperCase()}   
       ${item.INSURED_NAME.toUpperCase()}`;
@@ -121,7 +143,46 @@ class Penawaran extends Component {
       return itemData.indexOf(textData) > -1;
     });
     console.log(newData);
-    this.setState({ Data: newData });
+    let hasilFilter = '';
+    if (newData.length === 0) {
+      hasilFilter = 'Data tidak ditemukan';
+    }
+    this.setState({Data: newData, hasilFilter});
+  };
+
+  hasilFilter = () => {
+    const {hasilFilter} = this.state;
+    if (hasilFilter !== '') {
+      return (
+        <Text
+          style={{
+            color: 'red',
+            fontSize: 14,
+            paddingLeft: 10,
+          }}>
+          {hasilFilter}
+        </Text>
+      );
+    }
+  };
+
+  onBatalPress = async () => {
+    await this.setState({keyword: ''});
+    this.searchFilterFunction();
+  }
+
+  renderBatal = () => {
+    const {keyword} = this.state;
+    if (keyword !== '') {
+      return (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <TouchableOpacity
+            onPress={() => this.onBatalPress()}>
+            <Text style={{color: 'white'}}>Batal</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
   };
 
   render() {
@@ -135,52 +196,52 @@ class Penawaran extends Component {
         }}>
         <Loader loading={this.state.loading} />
 
-        <Card
-          cStyle={{
-            borderRadius: 10,
-            borderColor: 'transparent',
-            shadowRadius: 10,
-            marginLeft: 0,
-            marginBottom: 0,
-            marginTop: 0,
-            marginRight: 0,
-          }}>
-          <CardSection
-            cStyle={{
-              backgroundColor: 'rgba(255, 255, 255, 0.3)',
-              borderRadius: 10,
-              borderBottomWidth: 0,
-              padding: 0,
-            }}>
-            <View style={styles.searchSection}>
-              {/* <Icon
-                style={styles.searchIcon}
-                name="search"
-                size={15}
-                color="#ddd"
-              /> */}
-              <Image
-                resizeMode="contain"
-                style={{
-                  //paddingRight: 10,
-                  //position: "absolute",
-                  width: 15,
-                  height: 15,
-                }}
-                source={require('../assets/icons/search.png')}
-              />
-              <Input
-                tStyle={styles.input}
-                placeholder="Cari Penawaran"
-                placeholderTextColor="#fff"
-                underlineColorAndroid="transparent"
-                onChangeText={val => {
-                  this.searchFilterFunction(val);
-                }}
-              />
-            </View>
-          </CardSection>
-        </Card>
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex: 5, flexDirection: 'column'}}>
+            <Card
+              cStyle={{
+                borderRadius: 10,
+                borderColor: 'transparent',
+                shadowRadius: 10,
+                marginLeft: 0,
+                marginBottom: 0,
+                marginTop: 0,
+                marginRight: 0,
+              }}>
+              <CardSection
+                cStyle={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                  borderRadius: 10,
+                  borderBottomWidth: 0,
+                  padding: 0,
+                }}>
+                <View style={styles.searchSection}>
+                  <Image
+                    resizeMode="contain"
+                    style={{
+                      width: 15,
+                      height: 15,
+                    }}
+                    source={require('../assets/icons/search.png')}
+                  />
+                  <Input
+                    tStyle={styles.input}
+                    placeholder="Cari Polis"
+                    placeholderTextColor="#fff"
+                    underlineColorAndroid="transparent"
+                    onChangeText={val => {
+                      this.setState({keyword: val});
+                    }}
+                    onSubmitEditing={() => this.searchFilterFunction()}
+                    value={this.state.keyword}
+                    returnKeyType="search"
+                  />
+                </View>
+              </CardSection>
+            </Card>
+          </View>
+          {this.renderBatal()}
+        </View>
         <View style={{flex: 5, marginTop: 29}}>
           <Text
             style={{
@@ -191,6 +252,7 @@ class Penawaran extends Component {
             }}>
             Daftar Penawaran
           </Text>
+          {this.hasilFilter()}
           <FlatList
             style={styles.flatList}
             data={this.state.Data}

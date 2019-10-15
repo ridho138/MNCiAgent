@@ -11,6 +11,7 @@ import moment from "moment";
 import EStyleSheet from "react-native-extended-stylesheet";
 import Modal from "react-native-modal";
 import NumberFormat from "react-number-format";
+import { toDateWS } from "../utils/Utils"
 
 // create a component
 class PremiumProduction extends Component {
@@ -19,8 +20,8 @@ class PremiumProduction extends Component {
     this.state = {
       loading: false,
       isModalVisible: false,
-      dariTanggal: moment(new Date()).format("YYYY-MM-DD"),
-      sampaiTanggal: moment(new Date()).format("YYYY-MM-DD"),
+      dariTanggal: moment().format("DD/MM/YYYY"),
+      sampaiTanggal: moment().format("DD/MM/YYYY"),
       modalHeight:
         Dimensions.get("window").height / 2 +
         Dimensions.get("window").height / 4,
@@ -50,9 +51,10 @@ class PremiumProduction extends Component {
     const { dariTanggal, sampaiTanggal } = this.state;
 
     if (dariTanggal !== "" && sampaiTanggal !== "") {
+
       const premiumProduction = await PremiumProductionService(
-        dariTanggal,
-        sampaiTanggal
+        toDateWS(dariTanggal),
+        toDateWS(sampaiTanggal)
       );
       this.setState({
         loading: false
@@ -78,7 +80,7 @@ class PremiumProduction extends Component {
       this.setState({
         loading: false
       });
-      Alert.alert("Error", "NIK and/or Password cannot be empty.");
+      Alert.alert("Error", "Data tidak boleh ada yang kosong.");
     }
   };
 
@@ -104,7 +106,7 @@ class PremiumProduction extends Component {
             }}
             date={this.state.dariTanggal} //initial date from state
             mode="date" //The enum of date, datetime and time
-            format="YYYY-MM-DD"
+            format="DD/MM/YYYY"
             confirmBtnText="Confirm"
             cancelBtnText="Cancel"
             showIcon={false}
@@ -128,7 +130,7 @@ class PremiumProduction extends Component {
             }}
             date={this.state.sampaiTanggal} //initial date from state
             mode="date" //The enum of date, datetime and time
-            format="YYYY-MM-DD"
+            format="DD/MM/YYYY"
             confirmBtnText="Confirm"
             cancelBtnText="Cancel"
             showIcon={false}
@@ -237,7 +239,7 @@ class PremiumProduction extends Component {
                             textAlign: "left"
                           }}
                         >
-                          Total Polis
+                          Policy
                         </Text>
                         <NumberFormat
                           value={item.POLICY}
@@ -255,7 +257,7 @@ class PremiumProduction extends Component {
                             textAlign: "left"
                           }}
                         >
-                          Total GWP
+                          GWP
                         </Text>
                         <NumberFormat
                           value={item.GWP}

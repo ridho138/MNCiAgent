@@ -163,7 +163,7 @@ class Menu extends Component {
                 <Image
                   resizeMode="contain"
                   style={styles.icon}
-                  source={require("../assets/icons/PremiBelumTerbayar.png")}
+                  source={require("../assets/icons/other.png")}
                 />
               </View>
               <View

@@ -1,26 +1,19 @@
 //import liraries
-import React, { Component } from "react";
+import React, {Component} from 'react';
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
-  StatusBar,
   Image,
-  ScrollView,
   FlatList,
-  KeyboardAvoidingView,
   TouchableOpacity,
   Dimensions,
-  Alert
-} from "react-native";
-import Button from "../components/Button";
-import Card from "../components/Card";
-import CardSection from "../components/CardSection";
-import Modal from "react-native-modal";
-import RadioGroup from "react-native-radio-buttons-group";
-import { GetNotificationsService } from "../services/GetNotificationsService"
-import Icon from "react-native-vector-icons/FontAwesome";
+  Alert,
+} from 'react-native';
+import Modal from 'react-native-modal';
+import RadioGroup from 'react-native-radio-buttons-group';
+import {GetNotificationsService} from '../services/GetNotificationsService';
+import Loader from '../components/Loader';
 
 // create a component
 class Notifikasi extends Component {
@@ -31,95 +24,92 @@ class Notifikasi extends Component {
       Data: [],
       pilihanFilter: [
         {
-          value: "0",
-          label: "Semua Notifikasi",
-          color: "#997b2e"
+          value: '0',
+          label: 'Semua Notifikasi',
+          color: '#997b2e',
         },
         {
-          value: "1",
-          label: "Premi Jatuh Tempo",
-          color: "#997b2e"
+          value: '1',
+          label: 'Premi Jatuh Tempo',
+          color: '#997b2e',
         },
         {
-          value: "2",
-          label: "Kontrak Agent",
-          color: "#997b2e"
+          value: '2',
+          label: 'Kontrak Agent',
+          color: '#997b2e',
         },
         {
-          value: "3",
-          label: "Kontrak AAUI",
-          color: "#997b2e"
-        }
+          value: '3',
+          label: 'Kontrak AAUI',
+          color: '#997b2e',
+        },
       ],
-      filter: ""
+      filter: '',
     };
     this.arrayholder = [];
   }
 
-  static navigationOptions = ({ navigation }) => {
-    const { params = {} } = navigation.state;
+  static navigationOptions = ({navigation}) => {
+    const {params = {}} = navigation.state;
     return {
       headerRight: (
-        
-        <View style={{ flex: 1, flexDirection: "row", paddingRight: 30 }}>
-            <TouchableOpacity
-              onPress={() => params.toggleModal()}
-            >
-              <Image
-                resizeMode="contain"
-                style={{
-                  //paddingRight: 10,
-                  //position: "absolute",
-                  width: 30,
-                  height: 30
-                }}
-                source={require("../assets/icons/sort.png")}
-              />
-            </TouchableOpacity>
-          </View>
-      )
+        <View style={{flex: 1, flexDirection: 'row', paddingRight: 30}}>
+          <TouchableOpacity onPress={() => params.toggleModal()}>
+            <Image
+              resizeMode="contain"
+              style={{
+                //paddingRight: 10,
+                //position: "absolute",
+                width: 30,
+                height: 30,
+              }}
+              source={require('../assets/icons/sort.png')}
+            />
+          </TouchableOpacity>
+        </View>
+      ),
     };
   };
 
   async componentDidMount() {
-    this.props.navigation.setParams({ toggleModal: this.toggleModal });
+    this.props.navigation.setParams({toggleModal: this.toggleModal});
     this.setState({
-      loading: true
+      loading: true,
     });
     const notif = await GetNotificationsService();
     this.setState({
-      loading: false
+      loading: false,
     });
-    if (notif.status === "SUCCESS") {
+    if (notif.status === 'SUCCESS') {
       // console.log(notif)
       this.setState({
-        Data: notif.data
+        Data: notif.data,
       });
       this.arrayholder = notif.data;
     } else {
-      Alert.alert("Info", notif.message);
+      Alert.alert('Info', notif.message);
     }
   }
 
   toggleModal = () => {
-    this.setState({ isModalVisible: !this.state.isModalVisible });
+    this.setState({isModalVisible: !this.state.isModalVisible});
   };
 
   onRadioButtonPress = data => {
-    this.setState({ pilihanFilter: data });
+    this.setState({pilihanFilter: data});
     let selectedButton = this.state.pilihanFilter.find(e => e.selected == true);
     selectedButton = selectedButton
       ? selectedButton.value
       : this.state.pilihanFilter[0].label;
 
-    this.setState({ filter: selectedButton });
+    this.setState({filter: selectedButton});
 
     this.toggleModal();
     this.searchFilterFunction(selectedButton);
   };
 
   searchFilterFunction = async text => {
-    const keyword = text === "0" ? "" : text
+    const keyword = text === '0' ? '' : text;
     const newData = this.arrayholder.filter(item => {
       const itemData = `${item.TYPE.toUpperCase()}`;
 
@@ -128,7 +118,7 @@ class Notifikasi extends Component {
       return itemData.indexOf(textData) > -1;
     });
     console.log(newData);
-    this.setState({ Data: newData });
+    this.setState({Data: newData});
     // if (newData.length === 0) {
     //   //this.loadData(text);
     // } else {
@@ -137,41 +127,39 @@ class Notifikasi extends Component {
   };
 
   renderList = item => {
-
-    let img = ""
-    if (item.TYPE === "0"){
-      img = 'require("../assets/images/pelayanan@3x.png")'
-    } else if (item.TYPE === "1"){
-      img = 'require("../assets/images/premiBelumTerbayar@3x.png")'
-    } else if (item.TYPE === "2"){
-      img = 'require("../assets/images/agentProfile@3x.png")'
-    } else if (item.TYPE === "3"){
-      img = 'require("../assets/images/qs@3x.png.png")'
-    }   
-    console.log(img)
+    let img = '';
+    if (item.TYPE === '0') {
+      img = require('../assets/icons/pelayanan_notif.png');
+    } else if (item.TYPE === '1') {
+      img = require('../assets/icons/premiBelumTerbayar_notif.png');
+    } else if (item.TYPE === '2') {
+      img = require('../assets/icons/agentProfile.png');
+    } else if (item.TYPE === '3') {
+      img = require('../assets/icons/qs.png');
+    }
+    console.log(img);
     return (
       <View
         style={{
-          flexDirection: "row",
+          flexDirection: 'row',
           minHeight: 50,
           margin: 5,
-          paddingLeft: 15
-        }}
-      >
-        {/* <View style={{ flex: 1 }}>
+          paddingLeft: 15,
+        }}>
+        <View style={{flex: 1, justifyContent: 'center'}}>
           <Image
             source={img}
-            style={{
-              flex: 1,
-              alignSelf: "stretch",
-              height: undefined,
-              width: undefined
-            }}
-            resizeMode="center"
+            // style={{
+            //   flex: 1,
+            //   alignSelf: "stretch"
+            // }}
+            resizeMode="contain"
           />
-        </View> */}
-        <View style={{  justifyContent: "center" }}>
-          <Text>{item.MESSAGE}</Text>
+        </View>
+        <View style={{flex: 6, justifyContent: 'center', paddingRight: 10}}>
+          <TouchableOpacity>
+            <Text>{item.MESSAGE}</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -183,12 +171,12 @@ class Notifikasi extends Component {
 
   renderSeparator = () => {
     return (
-      <View style={{ alignItems: "center" }}>
+      <View style={{alignItems: 'center'}}>
         <View
           style={{
             height: 1,
-            width: "90%",
-            backgroundColor: "#997A2D"
+            width: '90%',
+            backgroundColor: '#997A2D',
           }}
         />
       </View>
@@ -197,12 +185,13 @@ class Notifikasi extends Component {
 
   render() {
     return (
-      <View style={{ backgroundColor: "#1A1F61", flex: 1 }}>
-        <View style={{ backgroundColor: "#fff" }}>
+      <View style={{backgroundColor: '#1A1F61', flex: 1}}>
+        <Loader loading={this.state.loading} />
+        <View style={{backgroundColor: '#fff'}}>
           <FlatList
             // style={styles.container}
             data={this.state.Data}
-            renderItem={({ item }) => this.renderList(item)}
+            renderItem={({item}) => this.renderList(item)}
             ItemSeparatorComponent={this.renderSeparator}
             keyExtractor={item => item.ID}
           />
@@ -284,9 +273,8 @@ class Notifikasi extends Component {
           onSwipeComplete={() => this.toggleModal()}
           onBackButtonPress={() => this.toggleModal()}
           style={styles.bottomModal}
-          swipeDirection={["down"]}
-          propagateSwipe
-        >
+          swipeDirection={['down']}
+          propagateSwipe>
           <View style={styles.modalContent}>
             <View style={styles.modalContainer}>
               <View>
@@ -294,8 +282,8 @@ class Notifikasi extends Component {
                   style={{
                     width: 60,
                     height: 6,
-                    backgroundColor: "#997b2e",
-                    borderRadius: 5
+                    backgroundColor: '#997b2e',
+                    borderRadius: 5,
                   }}
                 />
               </View>
@@ -316,7 +304,7 @@ class Notifikasi extends Component {
 // define your styles
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff"
+    backgroundColor: '#fff',
     // alignItems: "center"
     // paddingLeft: 5,
     // paddingRight: 20,
@@ -324,67 +312,67 @@ const styles = StyleSheet.create({
   },
   listPolis: {
     height: 35,
-    color: "black"
+    color: 'black',
   },
   buttonContainer: {
     paddingTop: 10,
-    alignItems: "center",
-    marginBottom: 10
+    alignItems: 'center',
+    marginBottom: 10,
   },
   ViewList: {
     flex: 1,
     padding: 10,
-    marginBottom: 20
+    marginBottom: 20,
   },
   searchIcon: {
-    padding: 10
+    padding: 10,
   },
   ImageStyle: {
     //padding: 1,
     //margin: 1,
     height: 20,
-    width: 20
+    width: 20,
     //resizeMode: "stretch",
     //alignItems: "center",
   },
   SectionStyle: {
-    flexDirection: "row",
-    backgroundColor: "white",
+    flexDirection: 'row',
+    backgroundColor: 'white',
     borderRadius: 5,
     margin: 22,
     flex: 1,
-    padding: 8
+    padding: 8,
   },
   rightContent: {
-    flexDirection: "column",
-    paddingLeft: 5
+    flexDirection: 'column',
+    paddingLeft: 5,
   },
   title: {
-    color: "#000",
-    justifyContent: "center",
-    fontWeight: "bold",
-    fontSize: 14
+    color: '#000',
+    justifyContent: 'center',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   bottomModal: {
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
     marginLeft: 0,
     marginRight: 0,
-    marginBottom: 0
+    marginBottom: 0,
   },
   modalContent: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     paddingRight: 40,
     paddingLeft: 40,
     paddingTop: 20,
     paddingBottom: 10,
-    height: Dimensions.get("window").height / 3
+    height: Dimensions.get('window').height / 3,
   },
   modalContainer: {
     flex: 1,
-    alignItems: "center"
-  }
+    alignItems: 'center',
+  },
 });
 
 //make this component available to the app

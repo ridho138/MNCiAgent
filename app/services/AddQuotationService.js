@@ -12,8 +12,11 @@ const AddQuotationService = async dataQuotation => {
     insured_name,
     insured_address,
     eff_date,
-    vehicle_merk_code,
-    vehicle_model_code,
+    merk,
+    model,
+    subModel,
+    telpTertanggung,
+    emailTertanggung,
     vehicle_code,
     color,
     plat_no,
@@ -27,10 +30,8 @@ const AddQuotationService = async dataQuotation => {
     paket,
     tsi,
     additional,
-    interest_insured,
     faktur_date,
     tenor,
-    vehicle_desc,
     premi,
     policy_cost,
     stamp,
@@ -80,14 +81,6 @@ const AddQuotationService = async dataQuotation => {
     {
       name: "eff_date",
       value: eff_date
-    },
-    {
-      name: "vehicle_merk_code",
-      value: vehicle_merk_code
-    },
-    {
-      name: "vehicle_model_code",
-      value: vehicle_model_code
     },
     {
       name: "vehicle_code",
@@ -142,20 +135,12 @@ const AddQuotationService = async dataQuotation => {
       value: additional
     },
     {
-      name: "interest_insured",
-      value: interest_insured
-    },
-    {
       name: "faktur_date",
       value: faktur_date
     },
     {
       name: "tenor",
       value: tenor
-    },
-    {
-      name: "vehicle_desc",
-      value: vehicle_desc
     },
     {
       name: "premi",
@@ -168,6 +153,26 @@ const AddQuotationService = async dataQuotation => {
     {
       name: "stamp",
       value: stamp
+    },
+    {
+      name: "telp",
+      value: telpTertanggung
+    },
+    {
+      name: "email",
+      value: emailTertanggung
+    },
+    {
+      name: "merk",
+      value: merk
+    },
+    {
+      name: "model",
+      value: model
+    },
+    {
+      name: "submodel",
+      value: subModel
     }
   ];
   // console.log(data);

@@ -1,15 +1,23 @@
 //import liraries
-import React, { Component } from "react";
-import { View, Text, StyleSheet, FlatList, TextInput, Image } from "react-native";
-import Button from "../components/Button";
-import Card from "../components/Card";
-import CardSection from "../components/CardSection";
-import { GetVehicleService } from "../services/GetVehicleService";
-import Loader from "../components/Loader";
-import { toDate } from "../utils/Utils";
-import Icon from "react-native-vector-icons/FontAwesome";
-import Input from "../components/Input";
-import EStyleSheet from "react-native-extended-stylesheet";
+import React, {Component} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TextInput,
+  Image,
+  Alert,
+} from 'react-native';
+import Button from '../components/Button';
+import Card from '../components/Card';
+import CardSection from '../components/CardSection';
+import {GetVehicleService} from '../services/GetVehicleService';
+import Loader from '../components/Loader';
+import {toDate} from '../utils/Utils';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Input from '../components/Input';
+import EStyleSheet from 'react-native-extended-stylesheet';
 
 // create a component
 class CariKendaraan extends Component {
@@ -17,13 +25,13 @@ class CariKendaraan extends Component {
     super(props);
     this.state = {
       Data: null,
-      keyword: "",
-      loading: false
+      keyword: '',
+      loading: false,
     };
   }
 
   onPilihPress = item => {
-    this.props.navigation.navigate("Simulasi", { item });
+    this.props.navigation.navigate('Simulasi', {item});
   };
 
   renderList = item => {
@@ -81,20 +89,20 @@ class CariKendaraan extends Component {
 
   onSearchKendaraanPress = async () => {
     this.setState({
-      loading: true
+      loading: true,
     });
-    const { keyword } = this.state;
+    const {keyword} = this.state;
     const dataKendaraan = await GetVehicleService(keyword);
 
-    if (dataKendaraan.status === "SUCCESS") {
+    if (dataKendaraan.status === 'SUCCESS') {
       this.setState({
-        Data: dataKendaraan.data
+        Data: dataKendaraan.data,
       });
     } else {
-      Alert.alert("Error", login.message);
+      Alert.alert('Error', dataKendaraan.message);
     }
     this.setState({
-      loading: false
+      loading: false,
     });
   };
 
@@ -102,33 +110,30 @@ class CariKendaraan extends Component {
     return (
       <View
         style={{
-          backgroundColor: "#1A1F61",
+          backgroundColor: '#1A1F61',
           flex: 1,
-          flexDirection: "column",
-          padding: 30
-        }}
-      >
+          flexDirection: 'column',
+          padding: 30,
+        }}>
         <Loader loading={this.state.loading} />
 
         <Card
           cStyle={{
             borderRadius: 10,
-            borderColor: "transparent",
+            borderColor: 'transparent',
             shadowRadius: 10,
             marginLeft: 0,
             marginBottom: 0,
             marginTop: 0,
-            marginRight: 0
-          }}
-        >
+            marginRight: 0,
+          }}>
           <CardSection
             cStyle={{
-              backgroundColor: "rgba(255, 255, 255, 0.3)",
+              backgroundColor: 'rgba(255, 255, 255, 0.3)',
               borderRadius: 10,
               borderBottomWidth: 0,
-              padding: 0
-            }}
-          >
+              padding: 0,
+            }}>
             <View style={styles.searchSection}>
               {/* <Icon
                 style={styles.searchIcon}
@@ -142,9 +147,9 @@ class CariKendaraan extends Component {
                   //paddingRight: 10,
                   //position: "absolute",
                   width: 15,
-                  height: 15
+                  height: 15,
                 }}
-                source={require("../assets/icons/search.png")}
+                source={require('../assets/icons/search.png')}
               />
               <Input
                 tStyle={styles.input}
@@ -152,28 +157,28 @@ class CariKendaraan extends Component {
                 placeholderTextColor="#fff"
                 underlineColorAndroid="transparent"
                 onChangeText={val => {
-                  this.setState({keyword: val})
+                  this.setState({keyword: val});
                 }}
                 onSubmitEditing={() => this.onSearchKendaraanPress()}
+                returnKeyType="search"
               />
             </View>
           </CardSection>
         </Card>
-        <View style={{ flex: 5, marginTop: 29 }}>
+        <View style={{flex: 5, marginTop: 29}}>
           <Text
             style={{
-              color: "#fff",
+              color: '#fff',
               fontSize: 16,
               paddingLeft: 10,
-              fontWeight: "bold"
-            }}
-          >
+              fontWeight: 'bold',
+            }}>
             Daftar Kendaraan
           </Text>
           <FlatList
             style={styles.flatList}
             data={this.state.Data}
-            renderItem={({ item }) => this.renderList(item)}
+            renderItem={({item}) => this.renderList(item)}
             keyExtractor={item => item.code}
           />
         </View>
@@ -186,45 +191,45 @@ class CariKendaraan extends Component {
 const styles = EStyleSheet.create({
   flatList: {
     flex: 1,
-    marginTop: 15
+    marginTop: 15,
   },
   rowView: {
-    flexDirection: "row",
-    paddingBottom: 5
+    flexDirection: 'row',
+    paddingBottom: 5,
   },
   buttonContainer: {
     paddingLeft: 15,
     paddingRight: 15,
     paddingBottom: 20,
-    alignItems: "center"
+    alignItems: 'center',
   },
   searchSection: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingLeft: 3
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingLeft: 3,
   },
   searchIcon: {
     paddingLeft: 15,
-    paddingRight: 15
+    paddingRight: 15,
   },
   input: {
     flex: 1,
-    color: "#fff",
-    backgroundColor: "transparent"
+    color: '#fff',
+    backgroundColor: 'transparent',
   },
   textTitle: {
-    color: "black",
-    fontSize: "0.8rem",
-    fontWeight: "bold",
-    flex: 1
+    color: 'black',
+    fontSize: '0.8rem',
+    fontWeight: 'bold',
+    flex: 1,
   },
   textContent: {
-    color: "black",
-    fontSize: "0.75rem",
-    flex: 1
-  }
+    color: 'black',
+    fontSize: '0.75rem',
+    flex: 1,
+  },
 });
 
 //make this component available to the app

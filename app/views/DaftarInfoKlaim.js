@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, Alert, Dimensions, FlatList } from "react-native";
+import { View, Text, Alert, Dimensions, FlatList, Image } from "react-native";
 import { ClaimInfoService } from "../services/ClaimInfoService";
 import Loader from "../components/Loader";
 import EStyleSheet from "react-native-extended-stylesheet";
@@ -7,7 +7,6 @@ import Card from "../components/Card";
 import CardSection from "../components/CardSection";
 import { toDate } from "../utils/Utils";
 import Input from "../components/Input"
-import Icon from "react-native-vector-icons/FontAwesome";
 // create a component
 class DaftarInfoKlaim extends Component {
   constructor(props) {
@@ -63,7 +62,7 @@ class DaftarInfoKlaim extends Component {
       <View style={styles.container}>
         <Loader loading={this.state.loading} />
         {/* <Input placeholder="Cari Polis" onChangeText={(val) => {this.searchFilterFunction(val)}} tStyle={{width: Dimensions.get("window").width - 30, marginBottom: 0}} /> */}
-        <Card
+        {/* <Card
           cStyle={{
             borderRadius: 10,
             borderColor: "transparent",
@@ -83,11 +82,13 @@ class DaftarInfoKlaim extends Component {
             }}
           >
             <View style={styles.searchSection}>
-              <Icon
-                style={styles.searchIcon}
-                name="search"
-                size={15}
-                color="#ddd"
+            <Image
+                resizeMode="contain"
+                style={{
+                  width: 15,
+                  height: 15
+                }}
+                source={require("../assets/icons/search.png")}
               />
               <Input
                 tStyle={styles.input}
@@ -99,7 +100,7 @@ class DaftarInfoKlaim extends Component {
               
             </View>
           </CardSection>
-        </Card>
+        </Card> */}
         <FlatList
           data={this.state.data}
           style={styles.flatList}
@@ -204,7 +205,8 @@ const styles = EStyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    paddingLeft: 3
   },
   searchIcon: {
     paddingLeft: 15,

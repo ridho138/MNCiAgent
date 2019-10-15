@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   Image,
+  PermissionsAndroid
 } from 'react-native';
 import Button from '../components/Button';
 import DatePicker from 'react-native-datepicker';
@@ -18,6 +19,7 @@ import Loader from '../components/Loader';
 import ImagePicker from 'react-native-image-picker';
 import Pdf from 'react-native-pdf';
 import {CreateQuotationDocumentService} from '../services/CreateQuotationDocumentService';
+
 
 // create a component
 class LihatPenawaran extends Component {
@@ -53,20 +55,26 @@ class LihatPenawaran extends Component {
       keterangan: '',
       dokumen: '',
       qs_no: '',
+      warna: '',
+      fungsional: '',
     };
   }
-
+  static navigationOptions = ({navigation}) => {
+    return {
+      headerTitle: 'Buat Penawaran (Approved)',
+    };
+  };
   componentDidMount = () => {
     const {navigation} = this.props;
     const data = navigation.getParam('item');
-
+    console.log(data.TSI);
     this.setState({
       refId: data.REFID,
       tanggalFaktur: data.FAKTUR_DATE,
       namaTertanggung: data.INSURED_NAME,
       alamatTertanggung: data.INSURED_ADDRESS,
-      telpTertanggung: '',
-      emailTertanggung: '',
+      telpTertanggung: data.INSURED_PHONE_NO,
+      emailTertanggung: data.INSURED_EMAIL,
       namaSTNK: data.STNK_NAME,
       nomorMesin: data.ENGINE_NUMBER,
       nomorRangka: data.CHASSIS_NUMBER,
@@ -78,19 +86,37 @@ class LihatPenawaran extends Component {
       tenor: data.TENOR,
       hargaPertanggungan: data.TSI,
       paket: data.PACKAGE,
-      merk: '',
-      model: '',
-      subModel: '',
+      merk: data.VEHICLE_MERK,
+      model: data.VEHICLE_MODEL,
+      subModel: data.VEHICLE_SUBMODEL,
       dokumen: data.DOKUMEN,
       qs_no: data.QS_NO,
+      warna: data.COLOR,
+      fungsional: data.FUNCTIONAL,
     });
   };
 
   onPrintPress = async () => {
     const {dokumen, qs_no} = this.state;
-    console.log(dokumen)
+    // console.log(dokumen);
+    // const pdfPath = `${RNFS.DocumentDirectoryPath}/${qs_no}.pdf`;
+    // const dirs = RNFetchBlob.fs.dirs;
+
+    // const file_path = dirs.DownloadDir + '/' + qs_no + '.pdf';
 
     if (dokumen !== '' && dokumen !== null) {
+      // RNFetchBlob.fs.writeFile(file_path, dokumen, 'base64');
+      // RNFS.writeFile(pdfPath, dokumen, 'base64').then(() =>
+      //   console.log('Image converted to jpg and saved at ' + pdfPath),
+      // );
+      // RNFS.writeFile(pdfPath, dokumen, 'base64')
+      //   .then(res =>
+      //     // console.log('Image converted to jpg and saved at ' + pdfPath + res),
+      //     console.log(res)
+      //   )
+      //   .catch(err => {
+      //     console.log(err.message, err.code);
+      //   });
       this.props.navigation.navigate('ViewPdf', {dokumen});
     } else {
       this.setState({
@@ -100,8 +126,12 @@ class LihatPenawaran extends Component {
       this.setState({
         loading: false,
       });
-      console.log(print)
+      console.log(print);
       if (print.status === 'SUCCESS') {
+        // RNFS.writeFile(pdfPath, print.data, 'base64').then(() =>
+        //   console.log('Image converted to jpg and saved at ' + pdfPath),
+        // );
+        // RNFetchBlob.fs.writeFile(file_path, print.data, 'base64');
         this.props.navigation.navigate('ViewPdf', {dokumen: print.data});
       } else {
         Alert.alert('Error', print.message);
@@ -155,9 +185,6 @@ class LihatPenawaran extends Component {
               style={styles.input}
               underlineColorAndroid="transparent"
               value={this.state.namaTertanggung}
-              onChangeText={value => {
-                this.setState({namaTertanggung: value});
-              }}
               editable={false}
             />
             <View style={styles.viewForm}>
@@ -167,9 +194,6 @@ class LihatPenawaran extends Component {
               style={styles.inputLong}
               underlineColorAndroid="transparent"
               value={this.state.alamatTertanggung}
-              onChangeText={value => {
-                this.setState({alamatTertanggung: value});
-              }}
               editable={false}
             />
             <View style={styles.viewForm}>
@@ -180,9 +204,6 @@ class LihatPenawaran extends Component {
               underlineColorAndroid="transparent"
               keyboardType="numeric"
               value={this.state.telpTertanggung}
-              onChangeText={value => {
-                this.setState({telpTertanggung: value});
-              }}
               editable={false}
             />
             <View style={styles.viewForm}>
@@ -192,9 +213,6 @@ class LihatPenawaran extends Component {
               style={styles.input}
               underlineColorAndroid="transparent"
               value={this.state.emailTertanggung}
-              onChangeText={value => {
-                this.setState({emailTertanggung: value});
-              }}
               editable={false}
             />
 
@@ -244,9 +262,6 @@ class LihatPenawaran extends Component {
               style={styles.input}
               underlineColorAndroid="transparent"
               value={this.state.namaSTNK}
-              onChangeText={value => {
-                this.setState({namaSTNK: value});
-              }}
               editable={false}
             />
             <View style={styles.viewForm}>
@@ -256,9 +271,6 @@ class LihatPenawaran extends Component {
               style={styles.input}
               underlineColorAndroid="transparent"
               value={this.state.nomorMesin}
-              onChangeText={value => {
-                this.setState({nomorMesin: value});
-              }}
               editable={false}
             />
             <View style={styles.viewForm}>
@@ -268,9 +280,24 @@ class LihatPenawaran extends Component {
               style={styles.input}
               underlineColorAndroid="transparent"
               value={this.state.nomorRangka}
-              onChangeText={value => {
-                this.setState({nomorRangka: value});
-              }}
+              editable={false}
+            />
+            <View style={styles.viewForm}>
+              <Text style={styles.Text}>Fungsional</Text>
+            </View>
+            <TextInput
+              style={styles.input}
+              underlineColorAndroid="transparent"
+              value={this.state.nomorRangka}
+              editable={false}
+            />
+            <View style={styles.viewForm}>
+              <Text style={styles.Text}>Warna</Text>
+            </View>
+            <TextInput
+              style={styles.input}
+              underlineColorAndroid="transparent"
+              value={this.state.nomorRangka}
               editable={false}
             />
             <View style={{padding: 5, flexDirection: 'row'}}>
@@ -281,9 +308,6 @@ class LihatPenawaran extends Component {
                 style={styles.input}
                 underlineColorAndroid="transparent"
                 value={this.state.tanggalFaktur}
-                onChangeText={value => {
-                  this.setState({tanggalFaktur: value});
-                }}
                 editable={false}
               />
             </View>
@@ -294,9 +318,6 @@ class LihatPenawaran extends Component {
               style={styles.inputLong}
               multiline={true}
               value={this.state.peralatanTambahan}
-              onChangeText={value => {
-                this.setState({peralatanTambahan: value});
-              }}
               editable={false}
             />
 
@@ -336,7 +357,7 @@ class LihatPenawaran extends Component {
             <TextInput
               style={styles.input}
               underlineColorAndroid="transparent"
-              value={this.state.hargaPertanggungan}
+              value={`${this.state.hargaPertanggungan}`}
               editable={false}
             />
 

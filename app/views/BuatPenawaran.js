@@ -15,11 +15,13 @@ import DatePicker from 'react-native-datepicker';
 import moment from 'moment';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import {Constants} from '../utils/Constants';
+import {setData, getData, toDateWS} from '../utils/Utils';
 import {AddQuotationService} from '../services/AddQuotationService';
 import {UploadImageService} from '../services/UploadImageService';
 import Loader from '../components/Loader';
 import ImagePicker from 'react-native-image-picker';
 import Input from '../components/Input';
+import Pickers from '../components/Pickers';
 
 // create a component
 class BuatPenawaran extends Component {
@@ -28,7 +30,7 @@ class BuatPenawaran extends Component {
     this.state = {
       loading: false,
       refId: '',
-      tanggalFaktur: moment(new Date()).format('YYYY-MM-DD'),
+      tanggalFaktur: moment(new Date()).format('DD/MM/YYYY'),
       namaTertanggung: '',
       alamatTertanggung: '',
       telpTertanggung: '',
@@ -53,49 +55,108 @@ class BuatPenawaran extends Component {
       description: [],
       jenisFoto: '',
       keterangan: '',
+      fungsional: 'Pribadi',
+      warna: '',
+      pilihanFungsional: [
+        {
+          label: 'Pribadi',
+          value: 'Pribadi',
+        },
+        {
+          label: 'Dinas',
+          value: 'Dinas',
+        },
+      ],
+      premi: '',
+      biayaPolis: '',
+      materai: '',
     };
   }
+
+  static navigationOptions = ({navigation}) => {
+    const param = navigation.getParam('title');
+    const title = param ? `Buat Penawaran (${param})` : 'Buat Penawaran';
+    return {
+      headerTitle: title,
+    };
+  };
 
   componentDidMount = () => {
     const {navigation} = this.props;
     const dataSimulasi = navigation.getParam('dataSimulasi');
-    const {
-      kodeKendaraan,
-      tahunBuat,
-      nomorPlat,
-      tanggalEfektif,
-      tenor,
-      hargaPertanggungan,
-      paket,
-      merk,
-      model,
-      subModel,
-    } = dataSimulasi;
+    const dataDraft = navigation.getParam('dataDraft');
+    if (dataSimulasi) {
+      const {
+        kodeKendaraan,
+        tahunBuat,
+        nomorPlat,
+        tanggalEfektif,
+        tenor,
+        hargaPertanggungan,
+        paket,
+        merk,
+        model,
+        subModel,
+        premi,
+        biayaPolis,
+        materai,
+      } = dataSimulasi;
 
-    this.setState({
-      kodeKendaraan,
-      tahunBuat,
-      nomorPlat,
-      tanggalEfektif,
-      tenor,
-      hargaPertanggungan,
-      paket,
-      merk,
-      model,
-      subModel,
-      refId:
-        moment(new Date()).format('YYMMDDhhmmss') +
-        '' +
-        Math.floor(Math.random() * 100) +
-        1,
-    });
+      this.setState({
+        kodeKendaraan,
+        tahunBuat,
+        nomorPlat,
+        tanggalEfektif,
+        tenor,
+        hargaPertanggungan,
+        paket,
+        merk,
+        model,
+        subModel,
+        premi,
+        biayaPolis,
+        materai,
+        refId:
+          moment(new Date()).format('YYMMDDhhmmss') +
+          '' +
+          Math.floor(Math.random() * 100) +
+          1,
+      });
+    }
+
+    if (dataDraft) {
+      this.setState({
+        refId: dataDraft.REFID,
+        tanggalFaktur: dataDraft.FAKTUR_DATE,
+        namaTertanggung: dataDraft.INSURED_NAME,
+        alamatTertanggung: dataDraft.INSURED_ADDRESS,
+        telpTertanggung: dataDraft.INSURED_PHONE_NO,
+        emailTertanggung: dataDraft.INSURED_EMAIL,
+        namaSTNK: dataDraft.STNK_NAME,
+        nomorMesin: dataDraft.ENGINE_NUMBER,
+        nomorRangka: dataDraft.CHASSIS_NUMBER,
+        peralatanTambahan: dataDraft.ADDITIONAL,
+        kodeKendaraan: dataDraft.VEHICLE_CODE,
+        tahunBuat: dataDraft.MANUFACTURE_YEAR,
+        nomorPlat: `${dataDraft.PLAT_NO}-${dataDraft.CENTER_LICENSE_NO}-${dataDraft.SUB_LICENSE_NO}`,
+        tanggalEfektif: dataDraft.EFF_DATE,
+        tenor: dataDraft.TENOR,
+        hargaPertanggungan: dataDraft.TSI,
+        paket: dataDraft.PACKAGE,
+        merk: dataDraft.VEHICLE_MERK,
+        model: dataDraft.VEHICLE_MODEL,
+        subModel: dataDraft.VEHICLE_SUBMODEL,
+        dokumen: dataDraft.DOKUMEN,
+        qs_no: dataDraft.QS_NO,
+        warna: dataDraft.COLOR,
+        premi: dataDraft.TOTAL_PREMI,
+        biayaPolis: dataDraft.POLICY_COST,
+        materai: dataDraft.STAMP,
+      });
+    }
   };
 
-  onKirimPenawaranPress = async () => {
-    this.setState({
-      loading: true,
-    });
-
+  getDataPenawaran = () => {
     const {
       namaTertanggung,
       alamatTertanggung,
@@ -112,7 +173,19 @@ class BuatPenawaran extends Component {
       tanggalFaktur,
       tenor,
       refId,
+      fungsional,
+      warna,
+      premi,
+      biayaPolis,
+      materai,
+      telpTertanggung,
+      emailTertanggung,
+      merk,
+      model,
+      subModel,
     } = this.state;
+
+    const plat = nomorPlat.split('-');
 
     const dataPenawaran = {
       lob_code: 'MV',
@@ -120,35 +193,143 @@ class BuatPenawaran extends Component {
       sob_code: 'AGENT',
       insured_name: namaTertanggung,
       insured_address: alamatTertanggung,
-      eff_date: tanggalEfektif,
-      vehicle_merk_code: '3rds3ds3',
-      vehicle_model_code: 's3drs3s',
+      eff_date: toDateWS(tanggalEfektif),
       vehicle_code: kodeKendaraan,
-      color: 'color',
-      plat_no: nomorPlat,
-      center_license_no: 'sdr3s34',
-      sub_license_no: '4rr',
+      color: warna,
+      plat_no: plat[0],
+      center_license_no: plat[1],
+      sub_license_no: plat[2],
       manufacture_year: tahunBuat,
       stnk_name: namaSTNK,
-      functional: 'r43esx',
+      functional: fungsional,
       engine_no: nomorMesin,
       chassis_no: nomorRangka,
       paket,
       tsi: hargaPertanggungan,
       additional: peralatanTambahan,
-      interest_insured: 'ser4w3sd',
-      faktur_date: tanggalFaktur,
+      faktur_date: toDateWS(tanggalFaktur),
       tenor,
-      vehicle_desc: 'sd43sw34ss',
-      premi: '50000000',
-      policy_cost: '20000',
-      stamp: '12000',
+      premi,
+      policy_cost: biayaPolis,
+      stamp: materai,
       refId,
+      status: 'DRAFT',
+      telpTertanggung,
+      emailTertanggung,
+      merk,
+      model,
+      subModel,
     };
+    console.log(dataPenawaran);
+    return dataPenawaran;
+  };
 
+  onSimpanPress = async () => {
+    this.setState({
+      loading: true,
+    });
+    const dataInput = this.getDataPenawaran();
+    const dataPenawaran = {
+      QS_NO: '',
+      INSURED_NAME: dataInput.insured_name,
+      INSURED_ADDRESS: dataInput.insured_address,
+      INTEREST_INSURED: dataInput.interest_insured,
+      EFF_DATE: this.state.tanggalEfektif,
+      EXP_DATE: '',
+      VEHICLE_MERK: dataInput.merk,
+      VEHICLE_MODEL: dataInput.model,
+      VEHICLE_SUBMODEL: dataInput.subModel,
+      VEHICLE_CODE: dataInput.vehicle_code,
+      COLOR: dataInput.color,
+      PLAT_NO: dataInput.plat_no,
+      CENTER_LICENSE_NO: dataInput.center_license_no,
+      SUB_LICENSE_NO: dataInput.sub_license_no,
+      MANUFACTURE_YEAR: dataInput.manufacture_year,
+      STNK_NAME: dataInput.stnk_name,
+      FUNCTIONAL: dataInput.fungsional,
+      ENGINE_NUMBER: dataInput.engine_no,
+      CHASSIS_NUMBER: dataInput.chassis_no,
+      PACKAGE: dataInput.paket,
+      TSI: dataInput.tsi,
+      ADDITIONAL: dataInput.additional,
+      FAKTUR_DATE: this.state.tanggalFaktur,
+      TOTAL_PREMI: dataInput.premi,
+      POLICY_COST: dataInput.policy_cost,
+      STAMP: dataInput.stamp,
+      TENOR: dataInput.tenor,
+      REFID: dataInput.refId,
+      DOKUMEN: '',
+      STATUS: 'DRAFT',
+      INSURED_PHONE_NO: dataInput.telpTertanggung,
+      INSURED_EMAIL: dataInput.emailTertanggung,
+    };
+    let dataStorage = await getData(Constants.KEY_DATA_PENAWARAN);
+    if (dataStorage) {
+      let idx;
+      dataStorage.map((data, i) => {
+        if (data.REFID === dataPenawaran.refId) {
+          idx = i;
+        }
+      });
+      if (idx !== undefined) {
+        let newArray = [...dataStorage];
+        newArray[idx] = dataPenawaran;
+        dataStorage = newArray;
+      } else {
+        dataStorage.push(dataPenawaran);
+      }
+    } else {
+      dataStorage = [dataPenawaran];
+    }
+
+    await setData(Constants.KEY_DATA_PENAWARAN, JSON.stringify(dataStorage));
+    // let cekaja = await getData(Constants.KEY_DATA_PENAWARAN);
+    // console.log(cekaja);
+    this.setState({
+      loading: false,
+    });
+
+    Alert.alert(
+      'INFO',
+      'Penawaran anda telah berhasil disimpan.',
+      [
+        {
+          text: 'OK',
+          onPress: () => this.props.navigation.navigate('Penawaran'),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
+  onKirimPenawaranPress = async () => {
+    this.setState({
+      loading: true,
+    });
+    const dataPenawaran = this.getDataPenawaran();
     const kirimPenawaran = await AddQuotationService(dataPenawaran);
 
     if (kirimPenawaran.status === 'SUCCESS') {
+      let dataStorage = await getData(Constants.KEY_DATA_PENAWARAN);
+      
+      if (dataStorage) {
+        let idx;
+        dataStorage.map((data, i) => {
+          console.log(data.REFID);
+          console.log(dataPenawaran.refId);
+          if (data.REFID === dataPenawaran.refId) {
+            idx = i;
+          }
+        });
+        
+        if (idx !== undefined) {
+          console.log(idx);
+          dataStorage.splice(idx, 1);
+        }
+      }
+     
+      await setData(Constants.KEY_DATA_PENAWARAN, JSON.stringify(dataStorage));
+
       this.onKirimGambar();
 
       // Alert.alert(
@@ -184,13 +365,13 @@ class BuatPenawaran extends Component {
         image: data.data,
       };
       const kirimGambar = UploadImageService(dataImage);
-      console.log(dataImage);
-      console.log(kirimGambar);
+      // console.log(dataImage);
+      // console.log(kirimGambar);
       promises.push(kirimGambar);
     });
     Promise.all(promises).then(() => {
       //When all promises are donde, this code is executed;
-      console.log('yaaay!');
+      // console.log('yaaay!');
       this.setState({
         loading: false,
       });
@@ -281,6 +462,7 @@ class BuatPenawaran extends Component {
           </View>
           <View>
             <Input
+              value={this.state.namaTertanggung}
               onChangeText={value => {
                 this.setState({namaTertanggung: value});
               }}
@@ -291,6 +473,7 @@ class BuatPenawaran extends Component {
           </View>
           <View>
             <Input
+              value={this.state.alamatTertanggung}
               onChangeText={value => {
                 this.setState({alamatTertanggung: value});
               }}
@@ -303,9 +486,11 @@ class BuatPenawaran extends Component {
           </View>
           <View>
             <Input
+              value={this.state.telpTertanggung}
               onChangeText={value => {
                 this.setState({telpTertanggung: value});
               }}
+              keyboardType="numeric"
             />
           </View>
           <View style={{marginBottom: 5, marginTop: 15, marginLeft: 5}}>
@@ -313,6 +498,7 @@ class BuatPenawaran extends Component {
           </View>
           <View>
             <Input
+              value={this.state.emailTertanggung}
               onChangeText={value => {
                 this.setState({emailTertanggung: value});
               }}
@@ -353,8 +539,9 @@ class BuatPenawaran extends Component {
           </View>
           <View>
             <Input
+              value={this.state.namaSTNK}
               onChangeText={value => {
-                this.setState({stnk_name: value});
+                this.setState({namaSTNK: value});
               }}
             />
           </View>
@@ -364,6 +551,7 @@ class BuatPenawaran extends Component {
           </View>
           <View>
             <Input
+              value={this.state.nomorMesin}
               onChangeText={value => {
                 this.setState({nomorMesin: value});
               }}
@@ -375,8 +563,35 @@ class BuatPenawaran extends Component {
           </View>
           <View>
             <Input
+              value={this.state.nomorRangka}
               onChangeText={value => {
                 this.setState({nomorRangka: value});
+              }}
+            />
+          </View>
+
+          <View style={{marginBottom: 5, marginTop: 15, marginLeft: 5}}>
+            <Text style={styles.textDate}>Fungsional</Text>
+          </View>
+          <View>
+            <Pickers
+              pStyle={{flex: 1}}
+              selectedValue={this.state.fungsional}
+              onValueChange={(itemValue, itemIndex) =>
+                this.setState({fungsional: itemValue})
+              }
+              List={this.state.pilihanFungsional}
+            />
+          </View>
+
+          <View style={{marginBottom: 5, marginTop: 15, marginLeft: 5}}>
+            <Text style={styles.textDate}>Warna</Text>
+          </View>
+          <View>
+            <Input
+              value={this.state.warna}
+              onChangeText={value => {
+                this.setState({warna: value});
               }}
             />
           </View>
@@ -396,7 +611,7 @@ class BuatPenawaran extends Component {
               }}
               date={this.state.tanggalFaktur} //initial date from state
               mode="date" //The enum of date, datetime and time
-              format="YYYY-MM-DD"
+              format="DD/MM/YYYY"
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"
               showIcon={false}
@@ -411,6 +626,7 @@ class BuatPenawaran extends Component {
           </View>
           <View>
             <Input
+              value={this.state.peralatanTambahan}
               onChangeText={value => {
                 this.setState({peralatanTambahan: value});
               }}
@@ -505,8 +721,15 @@ class BuatPenawaran extends Component {
             })}
           </View>
 
-          <View style={{marginTop: 30}}>
-            <Button onPress={() => this.onKirimPenawaranPress()}>KIRIM</Button>
+          <View style={{marginTop: 30, flexDirection: 'row'}}>
+            <View style={{flex: 1, paddingRight: 5}}>
+              <Button onPress={() => this.onSimpanPress()}>SIMPAN</Button>
+            </View>
+            <View style={{flex: 1, paddingLeft: 5}}>
+              <Button onPress={() => this.onKirimPenawaranPress()}>
+                KIRIM
+              </Button>
+            </View>
           </View>
         </ScrollView>
       </View>

@@ -56,7 +56,7 @@ const ClaimInfoService = async (datefrom = "2019-01-01", dateto = "2019-08-19", 
     } else {
       result = {
         status: "FAILED",
-        message: "Invalid NIK and/or Password"
+        message: "Data tidak ditemukan."
       };
     }
   } catch (error) {

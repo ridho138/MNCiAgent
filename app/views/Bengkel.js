@@ -1,5 +1,5 @@
 //import liraries
-import React, { Component } from "react";
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -10,17 +10,19 @@ import {
   FlatList,
   KeyboardAvoidingView,
   TouchableOpacity,
-  TextInput
-} from "react-native";
-import Card from "../components/Card";
-import CardSection from "../components/CardSection";
-import { WorkshopService } from "../services/WorkshopService";
-import Loader from "../components/Loader";
-import Icon from "react-native-vector-icons/FontAwesome";
-import { connect } from "react-redux";
-import { setModalMenu } from "../actions";
-import EStyleSheet from "react-native-extended-stylesheet";
-import Input from "../components/Input";
+  TextInput,
+  Dimensions,
+} from 'react-native';
+import Card from '../components/Card';
+import CardSection from '../components/CardSection';
+import {WorkshopService} from '../services/WorkshopService';
+import Loader from '../components/Loader';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {connect} from 'react-redux';
+import {setModalMenu} from '../actions';
+import EStyleSheet from 'react-native-extended-stylesheet';
+import Input from '../components/Input';
+import Modal from 'react-native-modal';
 
 // create a component
 class Bengkel extends Component {
@@ -28,15 +30,20 @@ class Bengkel extends Component {
     super(props);
     this.state = {
       Data: null,
-      city: "",
-      loading: false
+      city: 'Dki Jakarta',
+      loading: false,
+      arrayCity: ['Dki Jakarta','Jawa Timur','Sulawesi Utara','Kalimantan Timur','Sulawesi Selatan','Banten','Daerah Istimewa Yogyakarta','Riau','Jawa Tengah','Jawa Barat','Bali','Kalimantan Selatan','Sumatera Selatan','Lampung','Sumatera Utara','Kalimantan Barat'],
+      isModalVisible: false,
     };
     this.arrayholder = [];
   }
   componentDidMount = () => {
     this.props.dispatch(setModalMenu(false));
-    this.onWorkshopPress()
-  }
+    this.onWorkshopPress();
+  };
+  toggleModal = () => {
+    this.setState({isModalVisible: !this.state.isModalVisible});
+  };
   renderList = item => {
     return (
       <Card>
@@ -102,10 +109,7 @@ class Bengkel extends Component {
                   <Text style={styles.textContent}>{item.PROVINCE}</Text>
                 </View>
               </View>
-
             </View>
-
-            
 
             {/* <View style={styles.buttonContainer}>
               <Button
@@ -126,114 +130,156 @@ class Bengkel extends Component {
 
   onWorkshopPress = async () => {
     this.setState({
-      loading: true
+      loading: true,
     });
-    const { city } = this.state;
-    const bengkel = await WorkshopService(city);
+    const bengkel = await WorkshopService("");
 
     this.setState({
-      loading: false
+      loading: false,
     });
-    if (bengkel.status === "SUCCESS") {
+    if (bengkel.status === 'SUCCESS') {
       this.setState({
-        Data: bengkel.data
+        Data: bengkel.data,
       });
       this.arrayholder = bengkel.data;
+      this.searchFilterFunction("Dki Jakarta")
     } else {
-      Alert.alert("Error", bengkel.message);
+      Alert.alert('Error', bengkel.message);
     }
   };
 
   searchFilterFunction = async text => {
     const newData = this.arrayholder.filter(item => {
-      const itemData = `${item.name.toUpperCase()} ${item.address.toUpperCase()} ${item.CITY.toUpperCase()}`;
-
+      const itemData = `${item.PROVINCE.toUpperCase()}`;
       const textData = text.toUpperCase();
 
       return itemData.indexOf(textData) > -1;
     });
     console.log(newData);
-    this.setState({ Data: newData });
+    this.setState({Data: newData});
   };
+
+  renderCityList = item => {
+    return (
+      <View>
+        <View style={{padding: 10}}>
+          <TouchableOpacity onPress={() => this.onCityPress(item)}>
+            <Text style={styles.textBranch}>{item}</Text>
+          </TouchableOpacity>
+        </View>
+        
+      </View>
+    );
+  };
+
+  onCityPress = (item) => {
+    // console.log(item)
+    this.setState({city: item});
+    this.toggleModal();
+    this.searchFilterFunction(item)
+  }
 
   render() {
     return (
       <View
         style={{
-          backgroundColor: "#1A1F61",
+          backgroundColor: '#1A1F61',
           flex: 1,
-          flexDirection: "column",
-          padding: 30
-        }}
-      >
+          flexDirection: 'column',
+          padding: 30,
+        }}>
         <Loader loading={this.state.loading} />
 
-        <Card
-          cStyle={{
-            borderRadius: 10,
-            borderColor: "transparent",
-            shadowRadius: 10,
-            marginLeft: 0,
-            marginBottom: 0,
-            marginTop: 0,
-            marginRight: 0
-          }}
-        >
-          <CardSection
-            cStyle={{
-              backgroundColor: "rgba(255, 255, 255, 0.3)",
-              borderRadius: 10,
-              borderBottomWidth: 0,
-              padding: 0
-            }}
-          >
-            <View style={styles.searchSection}>
-              {/* <Icon
-                style={styles.searchIcon}
-                name="search"
-                size={15}
-                color="#ddd"
-              /> */}
+        <View style={{flexDirection: 'row'}}>
+          <View style={{flex: 5, flexDirection: 'column'}}>
+            <Card
+              cStyle={{
+                borderRadius: 10,
+                borderColor: 'transparent',
+                shadowRadius: 10,
+                marginLeft: 0,
+                marginBottom: 0,
+                marginTop: 0,
+                marginRight: 0,
+              }}>
+              <CardSection
+                cStyle={{
+                  // backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                  borderRadius: 10,
+                  borderBottomWidth: 0,
+                  padding: 0,
+                }}>
+                <View style={styles.searchSection}>
+                  <Input
+                    tStyle={styles.input}
+                    editable={false}
+                    value={this.state.city}
+                  />
+                </View>
+              </CardSection>
+            </Card>
+          </View>
+          <View
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <TouchableOpacity onPress={() => this.toggleModal()}>
               <Image
                 resizeMode="contain"
-                style={{
-                  //paddingRight: 10,
-                  //position: "absolute",
-                  width: 15,
-                  height: 15
-                }}
-                source={require("../assets/icons/search.png")}
+                // style={{
+                //   width: 15,
+                //   height: 15,
+                // }}
+                source={require('../assets/icons/down.png')}
               />
-              <Input
-                tStyle={styles.input}
-                placeholder="Cari Bengkel"
-                placeholderTextColor="#fff"
-                underlineColorAndroid="transparent"
-                onChangeText={val => {
-                  this.searchFilterFunction(val)
-                }}
-              />
-            </View>
-          </CardSection>
-        </Card>
-        <View style={{ flex: 5, marginTop: 29 }}>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{flex: 5, marginTop: 29}}>
           <Text
             style={{
-              color: "#fff",
+              color: '#fff',
               fontSize: 16,
               paddingLeft: 10,
-              fontWeight: "bold"
-            }}
-          >
+              fontWeight: 'bold',
+            }}>
             Daftar Bengkel
           </Text>
           <FlatList
             style={styles.flatList}
             data={this.state.Data}
-            renderItem={({ item }) => this.renderList(item)}
+            renderItem={({item}) => this.renderList(item)}
             keyExtractor={item => item.name}
           />
         </View>
+        <Modal
+          isVisible={this.state.isModalVisible}
+          onBackdropPress={() => this.toggleModal()}
+          onSwipeComplete={() => this.toggleModal()}
+          onBackButtonPress={() => this.toggleModal()}
+          style={styles.bottomModal}
+          swipeDirection={['down']}
+          propagateSwipe>
+          <View style={styles.modalContent}>
+            <View style={styles.modalContainer}>
+              <View>
+                <View
+                  style={{
+                    width: 60,
+                    height: 6,
+                    backgroundColor: '#997b2e',
+                    borderRadius: 5,
+                  }}
+                />
+              </View>
+              <FlatList
+                style={styles.flatList}
+                data={this.state.arrayCity}
+                renderItem={({item}) => this.renderCityList(item)}
+                showsVerticalScrollIndicator={false}
+                // keyExtractor={item => item.name}
+              />
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -268,8 +314,8 @@ const styles = EStyleSheet.create({
   },
   input: {
     flex: 1,
-    color: '#fff',
-    backgroundColor: 'transparent',
+    color: '#000',
+    // backgroundColor: 'transparent',
   },
   textTitle: {
     color: 'black',
@@ -282,11 +328,37 @@ const styles = EStyleSheet.create({
     fontSize: '0.75rem',
     flex: 1,
   },
+  textBranch: {
+    color: 'black',
+    fontSize: '0.8rem',
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+  bottomModal: {
+    justifyContent: 'flex-end',
+    marginLeft: 0,
+    marginRight: 0,
+    marginBottom: 0,
+  },
+  modalContent: {
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    backgroundColor: 'white',
+    paddingRight: 40,
+    paddingLeft: 40,
+    paddingTop: 20,
+    paddingBottom: 10,
+    height: Dimensions.get('window').height / 3,
+  },
+  modalContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
 });
 
 const mapStateToProps = state => {
   return {
-    data: state.dataModalMenu.isOpen
+    data: state.dataModalMenu.isOpen,
   };
 };
 

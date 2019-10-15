@@ -23,8 +23,8 @@ class Login extends Component {
   onLoginPress = async () => {
     const { username, password, registrationId } = this.state;
 
-    if (validateEmail(username)) {
-      if (username !== "" && password !== "") {
+    if (username !== "" && password !== "") {
+      if (validateEmail(username)) {
         this.setState({
           loading: true
         });
@@ -48,10 +48,10 @@ class Login extends Component {
         this.setState({
           loading: false
         });
-        Alert.alert("Info", "Email dan / atau Kata Sandi tidak boleh kosong.");
+        Alert.alert("Info", "Format Email salah.");
       }
     } else {
-      Alert.alert("Info", "Format Email salah.");
+      Alert.alert("Info", "Email dan / atau Kata Sandi tidak boleh kosong.");
     }
   };
 

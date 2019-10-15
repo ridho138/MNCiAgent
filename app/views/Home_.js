@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Dimensions, Alert} from 'react-native';
+import {View, Dimensions, Alert, Image, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
 import {setModalMenu, seNewsAnnouncementList} from '../actions';
 import Modal from 'react-native-modal';
@@ -16,6 +16,8 @@ import {PremiumProductionService} from '../services/PremiumProductionService';
 import {EventScheduleService} from '../services/EventScheduleService';
 import LinearGradient from 'react-native-linear-gradient';
 import moment from 'moment';
+import withBadge from '../components/withBadge';
+import { GetNotificationsService } from "../services/GetNotificationsService"
 
 class Home extends Component {
   constructor(props) {
@@ -37,8 +39,68 @@ class Home extends Component {
       monthName: '',
       year: '',
       bulanProduksi: '',
+      notifCount: '0'
     };
   }
+
+  static navigationOptions = ({navigation}) => {
+    const {params = {}} = navigation.state;
+    const BadgedIcon = withBadge(params.notifCount)(Image);
+    return {
+      headerStyle: {
+        backgroundColor: 'white',
+      },
+      headerLeft: (
+        <Image
+          resizeMode="contain"
+          style={{
+            marginLeft: 15,
+            position: 'absolute',
+            width: 146,
+            height: 43,
+          }}
+          source={require('../assets/images/logo-gold.png')}
+        />
+      ),
+      headerRight: (
+        <View style={{flex: 1, flexDirection: 'row', paddingRight: 30}}>
+          <TouchableOpacity onPress={() => navigation.navigate('Pengaturan')}>
+            <Image
+              resizeMode="contain"
+              style={{
+                //paddingRight: 20,
+                //position: "absolute",
+                width: 30,
+                height: 30,
+                marginRight: 20,
+              }}
+              source={require('../assets/icons/settings.png')}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.navigate('Notifikasi')}>
+            <BadgedIcon
+              resizeMode="contain"
+              style={{
+                width: 30,
+                height: 30,
+              }}
+              source={require('../assets/icons/notification.png')}
+            />
+            {/* <Image
+              resizeMode="contain"
+              style={{
+                width: 30,
+                height: 30
+              }}
+              source={require("../assets/icons/notification.png")}
+            /> */}
+          </TouchableOpacity>
+        </View>
+      )
+    };
+  };
+
   toggleModal = () => {
     this.props.dispatch(setModalMenu(!this.props.data));
   };
@@ -49,19 +111,35 @@ class Home extends Component {
         loading: true,
       });
 
+      // // Hitung Notifikasi belum baca
+      // let notifCount = 0;
+      // const notif = await GetNotificationsService()
+      // if (notif.status === 'SUCCESS') {
+      //   notif.data.map(data => {
+      //     if(data.ISREAD === "0"){
+      //       notifCount += 1;
+      //     }
+         
+      //   });
+      // }
+      // console.log(notif)
+      // this.setState({notifCount})
+      // this.props.navigation.setParams({notifCount: this.state.notifCount});
+
+      // Set data profil
       const profile = await getData(Constants.KEY_DATA_USER);
       this.setState({profileAgent: profile.profile});
 
+      // Berita & Informasi
       const news = await EventScheduleService();
-      console.log(news.data);
+      // console.log(news.data);
       this.props.dispatch(seNewsAnnouncementList(news.data));
 
+      // Summary Production
       const dateFrom = moment()
         .startOf('month')
         .format('YYYY-MM-DD');
       const dateTo = moment(new Date()).format('YYYY-MM-DD');
-      // const momentLokal = moment();
-      // momentLokal.locale('id');
       const bulanProduksi = moment(new Date()).format('MMMM YYYY');
 
       const premiumProduction = await PremiumProductionService(
@@ -84,7 +162,7 @@ class Home extends Component {
       this.setState({
         loading: false,
       });
-      console.error(e.message);
+      // console.error(e.message);
       Alert.alert('Error', e.message);
     }
   };
